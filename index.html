@@ -1,0 +1,2840 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="肸肸工作台">
+<meta name="theme-color" content="#2563eb">
+<meta name="description" content="肸肸工作台 - 汽车零部件海外销售专属工作台">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>肸肸工作台</title>
+<style>
+:root {
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --bg: #f1f5f9;
+  --card: #ffffff;
+  --text: #1e293b;
+  --text-light: #64748b;
+  --border: #e2e8f0;
+  --success: #16a34a;
+  --danger: #dc2626;
+  --warning: #f59e0b;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05);
+  --radius: 12px;
+  --nav-width: 240px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+/* ===== 布局 ===== */
+.app {
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+}
+
+/* ===== 侧边导航 ===== */
+.sidebar {
+  width: var(--nav-width);
+  background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary) 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 100;
+}
+
+.sidebar-header {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+.sidebar-header .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-header .logo-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  backdrop-filter: blur(10px);
+}
+
+.sidebar-header h1 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-header .subtitle {
+  font-size: 11px;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+.nav-list {
+  flex: 1;
+  padding: 12px 10px;
+  overflow-y: auto;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  user-select: none;
+}
+
+.nav-item:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+.nav-item.active {
+  background: rgba(255,255,255,0.22);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.nav-item .icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.nav-item .badge {
+  margin-left: auto;
+  background: var(--danger);
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* ===== 主内容区 ===== */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.topbar {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.topbar .menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  color: var(--text);
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.topbar .menu-btn:active { background: var(--border); }
+
+.topbar .title { font-size: 17px; font-weight: 600; }
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.page { display: none; padding: 20px; }
+.page.active { display: block; animation: fadeIn 0.25s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== 卡片与通用组件 ===== */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.section-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:active { background: var(--primary-dark); transform: scale(0.97); }
+.btn-success { background: var(--success); color: #fff; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-ghost { background: var(--border); color: var(--text); }
+.btn-ghost:active { background: #cbd5e1; }
+
+.btn-block { width: 100%; }
+.btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
+
+/* ===== 首页 ===== */
+.welcome-card {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: #fff;
+  padding: 24px;
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-lg);
+}
+
+.welcome-card .greeting { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.welcome-card .date { font-size: 13px; opacity: 0.9; }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.stat-card .num { font-size: 28px; font-weight: 700; color: var(--primary); }
+.stat-card .label { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+
+.quick-nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.quick-nav-item {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 18px 10px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.quick-nav-item:active { transform: scale(0.95); }
+.quick-nav-item .icon { font-size: 28px; margin-bottom: 6px; }
+.quick-nav-item .name { font-size: 12px; font-weight: 500; }
+
+/* ===== 英语学习 ===== */
+.learn-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: var(--card);
+  padding: 6px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.learn-tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-light);
+}
+
+.learn-tab.active { background: var(--primary); color: #fff; }
+
+.quiz-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar .fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+.quiz-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  margin-bottom: 14px;
+}
+
+.quiz-question {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.quiz-hint { font-size: 13px; color: var(--text-light); margin-bottom: 16px; }
+
+.quiz-options { display: flex; flex-direction: column; gap: 10px; }
+
+.quiz-option {
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quiz-option:active { transform: scale(0.98); }
+
+.quiz-option .opt-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.quiz-option .opt-en {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.quiz-option .opt-zh {
+  font-size: 12px;
+  color: var(--text-light);
+  line-height: 1.3;
+  display: none;
+}
+
+.quiz-option.revealed .opt-zh { display: block; }
+
+.quiz-option .opt-label {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; color: var(--text-light);
+  flex-shrink: 0;
+}
+
+.quiz-option.correct { border-color: var(--success); background: #f0fdf4; }
+.quiz-option.correct .opt-label { background: var(--success); color: #fff; }
+.quiz-option.wrong { border-color: var(--danger); background: #fef2f2; }
+.quiz-option.wrong .opt-label { background: var(--danger); color: #fff; }
+
+.quiz-feedback {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  display: none;
+}
+
+.quiz-feedback.show { display: block; }
+.quiz-feedback.correct { background: #f0fdf4; color: var(--success); }
+.quiz-feedback.wrong { background: #fef2f2; color: var(--danger); }
+
+.quiz-complete {
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.quiz-complete .emoji { font-size: 56px; margin-bottom: 12px; }
+.quiz-complete .title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.quiz-complete .score { font-size: 16px; color: var(--text-light); margin-bottom: 20px; }
+
+/* 跟读 */
+.speak-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.speak-en {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.speak-zh { font-size: 14px; color: var(--text-light); margin-bottom: 18px; }
+
+.speak-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+.speak-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  min-width: 90px;
+}
+
+.speak-btn .ico { font-size: 24px; }
+.speak-btn.listen { background: var(--primary); color: #fff; }
+.speak-btn.record { background: var(--success); color: #fff; }
+.speak-btn:active { transform: scale(0.95); }
+.speak-btn.recording { background: var(--danger); animation: pulse 1s infinite; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.recognized-text {
+  margin-top: 14px;
+  padding: 12px;
+  background: var(--bg);
+  border-radius: 8px;
+  font-size: 14px;
+  display: none;
+}
+
+.recognized-text.show { display: block; }
+
+.speak-result {
+  margin-top: 10px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  display: none;
+}
+
+.speak-result.show { display: inline-block; }
+.speak-result.good { background: #f0fdf4; color: var(--success); }
+.speak-result.try { background: #fef3c7; color: var(--warning); }
+
+/* ===== 新闻 ===== */
+.news-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.news-tabs::-webkit-scrollbar { display: none; }
+
+.news-tab {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--card);
+  color: var(--text-light);
+  box-shadow: var(--shadow);
+  transition: all 0.2s;
+}
+
+.news-tab.active { background: var(--primary); color: #fff; }
+
+.news-item {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: transform 0.15s;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.news-item:active { transform: scale(0.98); }
+
+.news-item .source {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-light);
+  margin-bottom: 6px;
+}
+
+.news-item .tag {
+  background: var(--primary);
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+.news-item h3 {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.news-item .desc {
+  font-size: 13px;
+  color: var(--text-light);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.news-item .time { font-size: 11px; color: var(--text-light); margin-top: 8px; }
+
+.loading { text-align: center; padding: 40px 20px; color: var(--text-light); }
+.loading .spinner {
+  width: 32px; height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== 备忘录 ===== */
+.memo-input {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.memo-input input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.memo-input input:focus { border-color: var(--primary); }
+
+.memo-list { display: flex; flex-direction: column; gap: 8px; }
+
+.memo-item {
+  background: var(--card);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.memo-item .checkbox {
+  width: 22px; height: 22px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  margin-top: 1px;
+}
+
+.memo-item .checkbox.checked {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+}
+
+.memo-item .checkbox .check { font-size: 14px; display: none; }
+.memo-item .checkbox.checked .check { display: block; }
+
+.memo-item .content {
+  flex: 1;
+  font-size: 14px;
+  word-break: break-word;
+  line-height: 1.5;
+}
+
+.memo-item.done .content {
+  text-decoration: line-through;
+  color: var(--text-light);
+}
+
+.memo-item .time { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+
+.memo-item .del-btn {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+.memo-item .del-btn:active { color: var(--danger); }
+
+.memo-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-light);
+}
+
+.memo-empty .emoji { font-size: 48px; margin-bottom: 10px; opacity: 0.5; }
+
+/* ===== BBC 随身英语 ===== */
+.bbc-intro {
+  background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 14px;
+  border: 1px solid #bfdbfe;
+}
+.bbc-intro .title { font-size: 16px; font-weight: 700; color: var(--primary-dark); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.bbc-intro .desc { font-size: 13px; color: #334155; line-height: 1.5; }
+
+.bbc-section-title { font-size: 14px; font-weight: 600; color: var(--text); margin: 16px 0 10px; display: flex; align-items: center; gap: 6px; }
+
+.bbc-item {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: transform 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.bbc-item:active { transform: scale(0.98); }
+.bbc-item .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+.bbc-item h3 { font-size: 15px; font-weight: 700; line-height: 1.35; flex: 1; }
+.bbc-item .badge-bbc {
+  background: #dcfce7;
+  color: #166534;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.bbc-item .zh { font-size: 13px; color: var(--text-light); margin-bottom: 8px; }
+.bbc-item .meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; color: var(--warning); font-weight: 500; }
+.bbc-item .meta span { display: inline-flex; align-items: center; gap: 3px; }
+
+.bbc-article-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 14px;
+}
+.bbc-article-header h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; line-height: 1.35; }
+.bbc-article-header .zh { font-size: 14px; opacity: 0.9; margin-bottom: 10px; }
+.bbc-article-header .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
+.bbc-article-header .chip {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+.bbc-article-header .chip.active { background: rgba(255,255,255,0.45); }
+
+.bbc-sentences { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.bbc-sentence {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 4px solid transparent;
+}
+.bbc-sentence:active { transform: scale(0.99); }
+.bbc-sentence.playing { border-left-color: var(--primary); background: #eff6ff; }
+.bbc-sentence .en { font-size: 15px; font-weight: 500; line-height: 1.6; margin-bottom: 6px; }
+.bbc-sentence .zh { font-size: 13px; color: var(--text-light); line-height: 1.5; display: none; }
+.bbc-sentence.show-zh .zh { display: block; }
+.bbc-sentence .word { display: inline-block; padding: 1px 2px; border-radius: 3px; transition: background 0.15s; }
+.bbc-sentence .word:hover { background: #dbeafe; }
+
+.bbc-player {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  padding: 10px 16px calc(14px + var(--safe-bottom));
+  z-index: 80;
+  display: none;
+}
+.bbc-player.show { display: block; }
+.bbc-player .progress-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.bbc-player .time { font-size: 11px; color: var(--text-light); width: 38px; text-align: center; }
+.bbc-player input[type=range] { flex: 1; -webkit-appearance: none; height: 4px; background: var(--border); border-radius: 2px; }
+.bbc-player input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--primary); }
+.bbc-player .controls { display: flex; justify-content: center; align-items: center; gap: 20px; }
+.bbc-player .ctrl-btn {
+  background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text);
+  display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%;
+}
+.bbc-player .ctrl-btn:active { background: var(--bg); }
+.bbc-player .play-btn { background: var(--primary); color: #fff; }
+.bbc-player .speed { font-size: 12px; font-weight: 600; color: var(--primary); min-width: 42px; text-align: center; }
+
+.bbc-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--primary); margin-bottom: 12px; cursor: pointer; }
+.bbc-vocab-card { background: #fef3c7; border-radius: 10px; padding: 12px; margin-bottom: 12px; font-size: 13px; }
+.bbc-vocab-card strong { color: #b45309; }
+
+/* ===== 遮罩层（移动端） ===== */
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 90;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.overlay.show { display: block; opacity: 1; }
+
+/* ===== 每日口语练习 ===== */
+.oral-header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.oral-header .title { font-size: 22px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.oral-header .subtitle { font-size: 13px; color: var(--text-light); margin-top: 4px; }
+.oral-header .date { font-size: 12px; color: var(--text-light); margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+.oral-scene-card {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border: 1px solid #fed7aa;
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.oral-scene-card .scene-title { font-size: 17px; font-weight: 700; color: #9a3412; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.oral-scene-card .scene-desc { font-size: 13px; color: #c2410c; line-height: 1.5; }
+
+.oral-chat { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+.oral-msg { display: flex; gap: 10px; }
+.oral-msg.you { flex-direction: row; }
+.oral-msg.client { flex-direction: row-reverse; }
+.oral-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.oral-msg.you .oral-avatar { background: #dbeafe; }
+.oral-msg.client .oral-avatar { background: #fce7f3; }
+.oral-bubble {
+  max-width: 78%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.oral-bubble:active { transform: scale(0.98); }
+.oral-msg.you .oral-bubble { background: #dbeafe; color: #1e3a8a; border-bottom-left-radius: 4px; }
+.oral-msg.client .oral-bubble { background: #fce7f3; color: #831843; border-bottom-right-radius: 4px; }
+.oral-bubble .en { font-size: 15px; line-height: 1.6; margin-bottom: 4px; }
+.oral-bubble .zh { font-size: 12px; line-height: 1.4; opacity: 0.8; }
+.oral-bubble .play-icon { position: absolute; bottom: 4px; right: 6px; font-size: 12px; opacity: 0.6; }
+
+.oral-key {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.oral-key .key-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.oral-key .key-item { font-size: 13px; color: var(--text-light); line-height: 1.6; margin-bottom: 4px; }
+
+.oral-tip {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius);
+  padding: 14px;
+}
+.oral-tip .tip-title { font-size: 14px; font-weight: 600; color: #166534; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.oral-tip .tip-content { font-size: 13px; color: #15803d; line-height: 1.6; }
+
+/* ===== 响应式 ===== */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0; bottom: 0; left: 0;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    padding-top: var(--safe-top);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .topbar { display: flex; }
+  .page { padding: 16px; }
+  .welcome-card .greeting { font-size: 19px; }
+}
+
+@media (min-width: 769px) {
+  .content { max-width: 800px; margin: 0 auto; }
+}
+
+/* 滚动条 */
+.content::-webkit-scrollbar { width: 6px; }
+.content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.nav-list::-webkit-scrollbar { width: 4px; }
+.nav-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- 侧边导航 -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">🚗</div>
+        <div>
+          <h1>肸肸工作台</h1>
+          <div class="subtitle">海外销售专属</div>
+        </div>
+      </div>
+    </div>
+    <nav class="nav-list">
+      <div class="nav-item active" data-page="home">
+        <span class="icon">🏠</span><span>首页</span>
+      </div>
+      <div class="nav-item" data-page="english">
+        <span class="icon">📚</span><span>英语学习</span>
+      </div>
+      <div class="nav-item" data-page="news">
+        <span class="icon">📰</span><span>每日新闻</span>
+      </div>
+      <div class="nav-item" data-page="oral">
+        <span class="icon">💬</span><span>每日口语</span>
+      </div>
+      <div class="nav-item" data-page="memo">
+        <span class="icon">📝</span><span>备忘录</span>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      肸肸工作台 v1.0<br>专注·高效·成长
+    </div>
+  </aside>
+
+  <!-- 遮罩 -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- 主内容 -->
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn">☰</button>
+      <span class="title" id="pageTitle">首页</span>
+    </header>
+    <div class="content" id="content">
+
+      <!-- 首页 -->
+      <div class="page active" id="page-home">
+        <div class="welcome-card">
+          <div class="greeting" id="greeting">你好，肸肸！</div>
+          <div class="date" id="todayDate"></div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="num" id="streakDays">0</div>
+            <div class="label">连续学习(天)</div>
+          </div>
+          <div class="stat-card">
+            <div class="num" id="todayProgress">0/5</div>
+            <div class="label">今日答题</div>
+          </div>
+        </div>
+        <div class="section-header">
+          <h2>快捷入口</h2>
+        </div>
+        <div class="quick-nav">
+          <div class="quick-nav-item" data-go="english">
+            <div class="icon">📚</div><div class="name">学英语</div>
+          </div>
+          <div class="quick-nav-item" data-go="news">
+            <div class="icon">📰</div><div class="name">看新闻</div>
+          </div>
+          <div class="quick-nav-item" data-go="oral">
+            <div class="icon">💬</div><div class="name">练口语</div>
+          </div>
+          <div class="quick-nav-item" data-go="memo">
+            <div class="icon">📝</div><div class="name">记备忘</div>
+          </div>
+        </div>
+        <div style="margin-top:20px">
+          <div class="card">
+            <div class="card-title">📊 学习记录</div>
+            <div id="studyRecordDisplay" style="font-size:13px;color:var(--text-light);line-height:1.7"></div>
+            <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-ghost btn-sm" onclick="addStudyDay()">+ 补录今天</button>
+              <button class="btn btn-ghost btn-sm" onclick="resetStudyRecord()" style="color:var(--danger)">重置记录</button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:20px">
+          <div class="card">
+            <div class="card-title">💡 每日一句</div>
+            <div id="dailyQuote" style="font-size:14px;color:var(--text-light);line-height:1.7"></div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:16px">
+          <button class="btn btn-ghost btn-sm" onclick="forceRefresh()" style="color:var(--text-light)">🔄 检查更新</button>
+          <div style="font-size:11px;color:var(--text-light);margin-top:6px">看不到新功能？点这里刷新到最新版本</div>
+        </div>
+      </div>
+
+      <!-- 英语学习 -->
+      <div class="page" id="page-english">
+        <div class="section-header">
+          <h2>英语学习</h2>
+          <span style="font-size:12px;color:var(--text-light)">每天10分钟</span>
+        </div>
+        <div class="learn-tabs">
+          <div class="learn-tab active" data-mode="quiz">闯关答题</div>
+          <div class="learn-tab" data-mode="speak">跟读练习</div>
+          <div class="learn-tab" data-mode="bbc">BBC随身英语</div>
+        </div>
+
+        <!-- 闯关答题 -->
+        <div id="quizMode">
+          <div class="quiz-progress">
+            <span id="quizCount">第 1/5 题</span>
+            <div class="progress-bar"><div class="fill" id="quizFill" style="width:20%"></div></div>
+            <span id="quizScore">得分 0</span>
+          </div>
+          <div id="quizContainer"></div>
+        </div>
+
+        <!-- 跟读 -->
+        <div id="speakMode" style="display:none">
+          <div class="quiz-progress">
+            <span id="speakCount">第 1/5 句</span>
+            <div class="progress-bar"><div class="fill" id="speakFill" style="width:20%"></div></div>
+          </div>
+          <div id="speakContainer"></div>
+        </div>
+
+        <!-- BBC 随身英语 -->
+        <div id="bbcMode" style="display:none">
+          <div id="bbcListView"></div>
+          <div id="bbcArticleView" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- 每日口语练习 -->
+      <div class="page" id="page-oral">
+        <div class="oral-header">
+          <div class="title">💬 每日口语练习</div>
+          <div class="subtitle">外贸沟通 · 接待客户 · 跨文化交流</div>
+          <div class="date"><span>📅</span><span id="oralDate"></span><span style="color:var(--success);font-weight:600">⚡ 自动更新</span></div>
+        </div>
+        <div id="oralContent"></div>
+      </div>
+
+      <!-- 每日新闻 -->
+      <div class="page" id="page-news">
+        <div class="section-header">
+          <h2>每日新闻</h2>
+          <button class="btn btn-ghost btn-sm" id="refreshNews">🔄 刷新</button>
+        </div>
+        <div class="news-tabs" id="newsTabs">
+          <div class="news-tab active" data-cat="auto">汽车行业</div>
+          <div class="news-tab" data-cat="world">国际时事</div>
+          <div class="news-tab" data-cat="tech">科技</div>
+          <div class="news-tab" data-cat="business">财经</div>
+        </div>
+        <div id="newsList"></div>
+      </div>
+
+      <!-- 备忘录 -->
+      <div class="page" id="page-memo">
+        <div class="section-header">
+          <h2>备忘录</h2>
+        </div>
+        <div class="memo-input">
+          <input type="text" id="memoInput" placeholder="记点什么... 回车添加">
+          <button class="btn btn-primary" id="addMemo">添加</button>
+        </div>
+        <div class="memo-list" id="memoList"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==================== 数据存储 ==================== */
+// 三重持久化：localStorage + sessionStorage + Cookie + Service Worker 备份
+const Store = {
+  get(key, def) {
+    // 1. 先尝试 localStorage
+    try {
+      const v = localStorage.getItem('xx_'+key);
+      if (v) return JSON.parse(v);
+    } catch(e) {}
+    // 2. 尝试从 sessionStorage 恢复
+    try {
+      const v = sessionStorage.getItem('xx_'+key);
+      if (v) {
+        // 恢复后顺便写回 localStorage
+        localStorage.setItem('xx_'+key, v);
+        return JSON.parse(v);
+      }
+    } catch(e) {}
+    // 3. 尝试从 Cookie 恢复（用 URL 解码）
+    try {
+      const cookies = document.cookie.split(';');
+      for (const c of cookies) {
+        const [k, v] = c.trim().split('=');
+        if (k === 'xx_'+key) {
+          const decoded = decodeURIComponent(v);
+          localStorage.setItem('xx_'+key, decoded);
+          return JSON.parse(decoded);
+        }
+      }
+    } catch(e) {}
+    return def;
+  },
+  set(key, val) {
+    const str = JSON.stringify(val);
+    // 1. 写 localStorage
+    try { localStorage.setItem('xx_'+key, str); } catch(e) {}
+    // 2. 同时写 sessionStorage（保险）
+    try { sessionStorage.setItem('xx_'+key, str); } catch(e) {}
+    // 3. 写 Cookie（最后兜底，存 365 天）
+    try {
+      document.cookie = 'xx_'+key+'='+encodeURIComponent(str)+';path=/;max-age=31536000;SameSite=Lax';
+    } catch(e) {}
+  }
+};
+
+// 检查数据是否丢失并提示
+window.addEventListener('load', () => {
+  const studyDates = Store.get('studyDates', []);
+  const memos = Store.get('memos', []);
+  // 如果检测到之前有数据但现在没了，显示提示
+  const lastSeen = Store.get('lastSeenDate', null);
+  const today = localDateStr();
+  if (!lastSeen) {
+    Store.set('lastSeenDate', today);
+  } else if (lastSeen !== today) {
+    Store.set('lastSeenDate', today);
+  }
+});
+
+/* ==================== 导航 ==================== */
+const pageTitles = { home:'首页', english:'英语学习', news:'每日新闻', oral:'每日口语', memo:'备忘录' };
+
+function switchPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === name));
+  document.getElementById('pageTitle').textContent = pageTitles[name] || '';
+  closeSidebar();
+  if (name === 'home') renderHome();
+  if (name === 'english') initEnglish();
+  if (name === 'news') loadNews();
+  if (name === 'oral') renderOral();
+  if (name === 'memo') renderMemos();
+  if (name !== 'english') hideBBCPlayer();
+  document.getElementById('content').scrollTop = 0;
+}
+
+document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', () => switchPage(n.dataset.page)));
+document.querySelectorAll('.quick-nav-item').forEach(n => n.addEventListener('click', () => switchPage(n.dataset.go)));
+
+/* 侧边栏开关 */
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('show'); }
+function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('show'); }
+document.getElementById('menuBtn').addEventListener('click', openSidebar);
+overlay.addEventListener('click', closeSidebar);
+
+/* ==================== 首页 ==================== */
+function renderHome() {
+  const now = new Date();
+  const h = now.getHours();
+  // 使用 Unicode 转义形式写"肸"字，避免某些手机字体回退显示成"胖"
+  const X = '\u80B8';  // 肸 的 Unicode 编码
+  let greet = `你好，${X}${X}！`;
+  if (h < 6) greet = `夜深了，${X}${X}`;
+  else if (h < 11) greet = `早上好，${X}${X}！`;
+  else if (h < 13) greet = `中午好，${X}${X}！`;
+  else if (h < 18) greet = `下午好，${X}${X}！`;
+  else greet = `晚上好，${X}${X}！`;
+  document.getElementById('greeting').textContent = greet;
+  const days = ['日','一','二','三','四','五','六'];
+  document.getElementById('todayDate').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 星期${days[now.getDay()]}`;
+
+  const streak = calcStreak();
+  document.getElementById('streakDays').textContent = streak;
+  const todayQ = Store.get('todayQuiz', { date:'', done:0, score:0 });
+  const today = localDateStr(now);
+  const done = todayQ.date === today ? todayQ.done : 0;
+  document.getElementById('todayProgress').textContent = `${done}/5`;
+
+  const quotes = [
+    'Success is not final, failure is not fatal: it is the courage to continue that counts.',
+    'The best way to predict the future is to create it.',
+    'Quality is not an act, it is a habit.',
+    'The auto industry is changing fast — stay curious, stay ahead.',
+    'Every conversation with a client is an opportunity to build trust.',
+    '细节决定成败，态度决定高度。',
+    '今日事今日毕，明日还有明日事。'
+  ];
+  document.getElementById('dailyQuote').textContent = quotes[Math.floor(Math.random()*quotes.length)];
+
+  // 显示学习记录详情
+  const dates = Store.get('studyDates', []);
+  const recordEl = document.getElementById('studyRecordDisplay');
+  if (dates.length === 0) {
+    recordEl.innerHTML = '📭 还没有学习记录<br>完成一次答题就会开始记录';
+  } else {
+    const sorted = [...dates].sort();
+    recordEl.innerHTML = `📚 累计学习 <strong style="color:var(--primary)">${dates.length}</strong> 天<br>📅 最近：${sorted[sorted.length-1]}${sorted.length > 1 ? ' ~ ' + sorted[0] : ''}`;
+  }
+}
+
+function addStudyDay() {
+  const dates = Store.get('studyDates', []);
+  const today = localDateStr();
+  if (dates.includes(today)) {
+    showUpdateToast('今天已经记录过了');
+  } else {
+    dates.push(today);
+    Store.set('studyDates', dates);
+    showUpdateToast('✅ 已补录今天的学习记录');
+    renderHome();
+  }
+}
+
+function resetStudyRecord() {
+  if (confirm('确定要清空所有学习记录吗？此操作不可撤销。')) {
+    Store.set('studyDates', []);
+    Store.set('todayQuiz', { date:'', done:0, score:0 });
+    Store.set('todaySpeak', { date:'', index:0, finished:false });
+    showUpdateToast('已清空学习记录');
+    renderHome();
+  }
+}
+
+// 获取本地时区的今天日期字符串（YYYY-MM-DD）
+function localDateStr(d) {
+  const date = d || new Date();
+  const y = date.getFullYear();
+  const m = String(date.getMonth()+1).padStart(2,'0');
+  const day = String(date.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+
+function calcStreak() {
+  const dates = Store.get('studyDates', []);
+  if (dates.length === 0) return 0;
+  const today = localDateStr();
+  const yesterday = localDateStr(new Date(Date.now()-86400000));
+  if (!dates.includes(today) && !dates.includes(yesterday)) return 0;
+  let streak = 0;
+  let d = new Date();
+  if (!dates.includes(localDateStr(d))) d = new Date(Date.now()-86400000);
+  while (dates.includes(localDateStr(d))) {
+    streak++;
+    d = new Date(d.getTime()-86400000);
+  }
+  return streak;
+}
+
+// 任何学习动作都调用一次；同一天多次调用不会重复累加
+function markStudyToday() {
+  const dates = Store.get('studyDates', []);
+  const today = localDateStr();
+  if (!dates.includes(today)) {
+    dates.push(today);
+    dates.sort();
+    Store.set('studyDates', dates);
+  }
+}
+
+/* ==================== 英语学习 - 闯关答题 ==================== */
+// 汽车零部件行业英语题库
+const QUIZ_BANK = [
+  { q: 'The ___ is the heart of a vehicle, converting fuel into mechanical energy.', options:['engine','bumper','mirror','tire'], tr:['发动机','保险杠','后视镜','轮胎'], answer:0, hint:'发动机', exp:'Engine（发动机）是车辆的核心部件，将燃料转化为机械能。' },
+  { q: 'A ___ is used to reduce harmful emissions from the exhaust.', options:['radiator','catalytic converter','alternator','spark plug'], tr:['散热器','催化转化器','发电机','火花塞'], answer:1, hint:'催化转化器', exp:'Catalytic converter（催化转化器）用于减少尾气中的有害排放。' },
+  { q: 'The ___ system provides the electrical power needed to start the engine.', options:['braking','starting','suspension','steering'], tr:['制动','启动','悬挂','转向'], answer:1, hint:'启动系统', exp:'Starting system（启动系统）提供启动发动机所需的电力。' },
+  { q: '___ refers to the ratio of fuel to air in the combustion mixture.', options:['Compression ratio','Air-fuel ratio','Gear ratio','Aspect ratio'], tr:['压缩比','空燃比','齿比','纵横比'], answer:1, hint:'空燃比', exp:'Air-fuel ratio（空燃比）指燃烧混合物中燃料与空气的比例。' },
+  { q: 'The ___ transmits power from the engine to the wheels.', options:['exhaust','transmission','radiator','bumper'], tr:['排气系统','变速箱/传动系统','散热器','保险杠'], answer:1, hint:'变速箱', exp:'Transmission（变速箱/传动系统）将动力从发动机传递到车轮。' },
+  { q: 'A ___ pump circulates coolant through the engine to prevent overheating.', options:['fuel','oil','water','air'], tr:['燃油泵','机油泵','水泵','空气泵'], answer:2, hint:'水泵', exp:'Water pump（水泵）循环冷却液防止发动机过热。' },
+  { q: 'The ___ absorbs shocks from the road for a smoother ride.', options:['exhaust','suspension','windshield','headlight'], tr:['排气系统','悬挂系统','挡风玻璃','前大灯'], answer:1, hint:'悬挂系统', exp:'Suspension（悬挂系统）吸收路面震动，提供更平稳的驾驶体验。' },
+  { q: '___ is a common material used for car body panels due to its light weight.', options:['Steel','Aluminum','Copper','Lead'], tr:['钢','铝','铜','铅'], answer:1, hint:'铝', exp:'Aluminum（铝）因重量轻而常用于车身面板。' },
+  { q: 'The ___ is responsible for filtering impurities from the engine oil.', options:['air filter','oil filter','fuel filter','cabin filter'], tr:['空气滤清器','机油滤清器','燃油滤清器','车内滤清器'], answer:1, hint:'机油滤清器', exp:'Oil filter（机油滤清器）负责过滤机油中的杂质。' },
+  { q: 'OEM stands for ___ Equipment Manufacturer.', options:['Original','Outside','Over','Open'], tr:['原始','外部','超过','开放'], answer:0, hint:'原始设备制造商', exp:'OEM = Original Equipment Manufacturer，原始设备制造商。' },
+  { q: 'The ___ connects the steering wheel to the steering mechanism.', options:['steering column','axle','driveshaft','strut'], tr:['转向柱','车轴','传动轴','支撑杆'], answer:0, hint:'转向柱', exp:'Steering column（转向柱）连接方向盘和转向机构。' },
+  { q: 'A ___ belt drives multiple engine accessories like the alternator and water pump.', options:['timing','serpentine','V','seat'], tr:['正时皮带','蛇形皮带','V型皮带','座椅皮带'], answer:1, hint:'蛇形皮带', exp:'Serpentine belt（蛇形皮带）驱动发电机、水泵等多个发动机附件。' },
+  { q: 'The ___ is the minimum price quoted to a customer before negotiation.', options:['retail price','invoice price','base price','list price'], tr:['零售价','发票价','基价','标价/目录价'], answer:3, hint:'标价', exp:'List price（标价/目录价）是谈判前报给客户的最低价格。' },
+  { q: 'A ___ is a formal document specifying parts, quantities, and delivery terms.', options:['quote','PO (Purchase Order)','invoice','receipt'], tr:['报价单','采购订单','发票','收据'], answer:1, hint:'采购订单', exp:'PO (Purchase Order) 采购订单是明确零件、数量和交货条款的正式文件。' },
+  { q: 'The ___ is the component that converts DC to AC power in the vehicle.', options:['battery','alternator','starter','coil'], tr:['电池','发电机','启动马达','线圈'], answer:1, hint:'发电机', exp:'Alternator（发电机）在车辆中将机械能转化为电能（交流电），并给电池充电。' },
+  { q: '___ refers to parts not made by the vehicle manufacturer.', options:['Genuine','OEM','Aftermarket','Refurbished'], tr:['原厂件','OEM件','售后件/副厂件','翻新件'], answer:2, hint:'售后件/副厂件', exp:'Aftermarket（售后件/副厂件）指非车辆制造商生产的零部件。' },
+  { q: 'The ___ system pressurizes fuel for injection into the engine cylinders.', options:['fuel delivery','exhaust','cooling','ignition'], tr:['燃油供给','排气','冷却','点火'], answer:0, hint:'燃油供给系统', exp:'Fuel delivery system（燃油供给系统）将燃油加压喷射到发动机气缸。' },
+  { q: 'A ___ is a device that slows or stops the vehicle by creating friction.', options:['clutch','brake','gear','bearing'], tr:['离合器','刹车','齿轮','轴承'], answer:1, hint:'刹车', exp:'Brake（刹车）通过产生摩擦力来减速或停止车辆。' },
+  { q: 'The ___ ratio measures how much the engine compresses the air-fuel mixture.', options:['gear','compression','air-fuel','transmission'], tr:['齿比','压缩比','空燃比','传动比'], answer:1, hint:'压缩比', exp:'Compression ratio（压缩比）衡量发动机压缩混合气体的程度。' },
+  { q: 'In international trade, ___ is the shipping term where the seller covers freight to the destination port.', options:['FOB','CIF','EXW','DDP'], tr:['FOB离岸价','CIF到岸价','EXW出厂价','DDP完税交货'], answer:1, hint:'CIF贸易术语', exp:'CIF (Cost, Insurance, Freight) 卖方承担运费和保险到目的港。' },
+  { q: 'A ___ is used to measure the thickness of brake pads or rotors.', options:['micrometer','caliper gauge','torque wrench','multimeter'], tr:['千分尺','卡尺','扭矩扳手','万用表'], answer:1, hint:'卡尺', exp:'Caliper gauge（卡尺/千分尺）用于测量刹车片或刹车盘的厚度。' },
+  { q: 'The ___ filter cleans the air entering the engine for combustion.', options:['oil','air','fuel','cabin'], tr:['机油滤清器','空气滤清器','燃油滤清器','车内滤清器'], answer:1, hint:'空气滤清器', exp:'Air filter（空气滤清器）过滤进入发动机燃烧的空气。' },
+  { q: '___ is a negotiation term meaning "free on board" — seller loads goods on the vessel.', options:['CIF','FOB','EXW','DDP'], tr:['CIF到岸价','FOB离岸价','EXW出厂价','DDP完税交货'], answer:1, hint:'FOB', exp:'FOB (Free On Board) 卖方负责将货物装上船。' },
+  { q: 'The ___ is the rotating shaft that delivers power from the transmission to the differential.', options:['axle','driveshaft','crankshaft','camshaft'], tr:['车轴','传动轴','曲轴','凸轮轴'], answer:1, hint:'传动轴', exp:'Driveshaft（传动轴）将动力从变速箱传递到差速器。' },
+  { q: 'A ___ wrench is used to tighten bolts to a specific tightness specification.', options:['socket','torque','adjustable','allen'], tr:['套筒扳手','扭矩扳手','可调扳手','内六角扳手'], answer:1, hint:'扭矩扳手', exp:'Torque wrench（扭矩扳手）用于将螺栓拧紧到特定的力矩规格。' },
+  { q: 'The ___ is a safety device that deploys in a collision to protect occupants.', options:['airbag','seatbelt pretensioner','crumple zone','all of the above'], tr:['安全气囊','安全带预紧器','吸能区','以上都是'], answer:3, hint:'以上都是', exp:'安全气囊、安全带预紧器、吸能区都是碰撞中保护乘员的安全装置。' },
+  { q: 'In supply chain, ___ refers to Just-In-Time inventory management.', options:['JIT','FIFO','LIFO','EOQ'], tr:['准时制','先进先出','后进先出','经济订货量'], answer:0, hint:'准时制', exp:'JIT (Just-In-Time) 准时制库存管理，减少库存成本。' },
+  { q: 'The ___ is a gear system that allows wheels to rotate at different speeds in turns.', options:['transmission','differential','transfer case','clutch'], tr:['变速箱','差速器','分动箱','离合器'], answer:1, hint:'差速器', exp:'Differential（差速器）允许转弯时左右车轮以不同转速旋转。' },
+  { q: 'A ___ is a disc that rotates with the wheel and is squeezed by brake pads to stop.', options:['brake rotor','brake drum','wheel hub','bearing'], tr:['刹车盘','刹车鼓','轮毂','轴承'], answer:0, hint:'刹车盘', exp:'Brake rotor（刹车盘/制动盘）随车轮旋转，被刹车片夹紧以制动。' },
+  { q: 'The ___ is the standard for automotive quality management systems.', options:['ISO 9001','IATF 16949','ISO 14001','OHSAS 18001'], tr:['通用质量标准','汽车质量标准','环境管理标准','职业安全标准'], answer:1, hint:'汽车质量管理体系', exp:'IATF 16949 是汽车行业质量管理体系国际标准。' },
+  // ===== 发动机与动力系统（扩展） =====
+  { q: 'The ___ is a device that mixes air and fuel in the correct ratio for combustion.', options:['carburetor','turbocharger','intercooler','throttle body'], tr:['化油器','涡轮增压器','中冷器','节气门体'], answer:0, hint:'化油器', exp:'Carburetor（化油器）将空气和燃料按正确比例混合供燃烧。' },
+  { q: 'A ___ increases engine power by forcing more air into the cylinders.', options:['supercharger','radiator','alternator','starter'], tr:['增压器','散热器','发电机','启动马达'], answer:0, hint:'增压器', exp:'Supercharger（增压器）通过强制更多空气进入气缸来增加发动机功率。' },
+  { q: 'The ___ is the component that opens and closes the engine valves at the right time.', options:['crankshaft','camshaft','piston','connecting rod'], tr:['曲轴','凸轮轴','活塞','连杆'], answer:1, hint:'凸轮轴', exp:'Camshaft（凸轮轴）负责在正确时间打开和关闭发动机气门。' },
+  { q: 'The ___ moves up and down inside the engine cylinder, converting combustion pressure into motion.', options:['piston','valve','spark plug','injector'], tr:['活塞','气门','火花塞','喷油嘴'], answer:0, hint:'活塞', exp:'Piston（活塞）在气缸内上下运动，将燃烧压力转化为机械运动。' },
+  { q: 'A ___ engine has its cylinders arranged in a single straight line.', options:['V-type','inline','flat','rotary'], tr:['V型','直列','水平对置','转子'], answer:1, hint:'直列发动机', exp:'Inline engine（直列发动机）的气缸排成一条直线。' },
+  { q: 'The ___ is the ratio of the cylinder volume at bottom dead center to top dead center.', options:['compression ratio','gear ratio','aspect ratio','stroke ratio'], tr:['压缩比','齿比','纵横比','冲程比'], answer:0, hint:'压缩比', exp:'Compression ratio（压缩比）是活塞在下止点与上止点时气缸容积之比。' },
+  { q: 'A ___ is a device that sprays fuel into the engine in a fine mist.', options:['spark plug','fuel injector','carburetor','throttle'], tr:['火花塞','喷油嘴','化油器','节气门'], answer:1, hint:'喷油嘴', exp:'Fuel injector（喷油嘴）将燃料以细雾状喷入发动机。' },
+  { q: 'The ___ is a heat exchanger that cools the engine coolant using air flow.', options:['radiator','intercooler','condenser','evaporator'], tr:['散热器','中冷器','冷凝器','蒸发器'], answer:0, hint:'散热器', exp:'Radiator（散热器）利用气流冷却发动机冷却液。' },
+  { q: 'The ___ is a sensor that measures the amount of oxygen in the exhaust gas.', options:['MAF sensor','O2 sensor','TPS','MAP sensor'], tr:['空气流量计','氧传感器','节气门位置传感器','进气压力传感器'], answer:1, hint:'氧传感器', exp:'O2 sensor（氧传感器）测量尾气中的氧气含量，帮助调节空燃比。' },
+  { q: 'A ___ is a belt that synchronizes the rotation of the crankshaft and camshaft.', options:['serpentine belt','timing belt','V-belt','fan belt'], tr:['蛇形皮带','正时皮带','V型皮带','风扇皮带'], answer:1, hint:'正时皮带', exp:'Timing belt（正时皮带）同步曲轴和凸轮轴的旋转，确保气门正时正确。' },
+  { q: 'The ___ is the part of the engine that houses the cylinders and coolant passages.', options:['cylinder head','engine block','oil pan','intake manifold'], tr:['气缸盖','发动机缸体','油底壳','进气歧管'], answer:1, hint:'发动机缸体', exp:'Engine block（发动机缸体）容纳气缸和冷却液通道，是发动机的基础结构。' },
+  { q: 'A ___ is a device that reduces harmful gases in the exhaust before they leave the tailpipe.', options:['muffler','catalytic converter','EGR valve','DPF'], tr:['消音器','催化转化器','EGR阀','颗粒捕集器'], answer:1, hint:'催化转化器', exp:'Catalytic converter（催化转化器）在尾气排出前减少有害气体。' },
+  { q: 'The ___ is a valve that controls the flow of exhaust gases back into the intake for lower emissions.', options:['EGR','PCV','purge','idle air'], tr:['EGR阀','PCV阀','碳罐阀','怠速阀'], answer:0, hint:'EGR阀', exp:'EGR valve（废气再循环阀）将部分尾气引入进气以降低排放。' },
+  // ===== 传动系统（扩展） =====
+  { q: 'A ___ transmission uses gears and clutches to change ratios manually.', options:['automatic','manual','CVT','dual-clutch'], tr:['自动','手动','无级','双离合'], answer:1, hint:'手动变速箱', exp:'Manual transmission（手动变速箱）用齿轮和离合器手动换挡。' },
+  { q: 'A ___ transmission can change ratios seamlessly without distinct gear steps.', options:['manual','automatic','CVT','sequential'], tr:['手动','自动','无级变速箱','序列式'], answer:2, hint:'无级变速箱', exp:'CVT（无级变速箱）可以无级变化传动比，没有固定挡位。' },
+  { q: 'The ___ is a fluid coupling that connects the engine to the automatic transmission.', options:['clutch','torque converter','flywheel','driveshaft'], tr:['离合器','液力变矩器','飞轮','传动轴'], answer:1, hint:'液力变矩器', exp:'Torque converter（液力变矩器）连接发动机和自动变速箱，传递动力。' },
+  { q: 'A ___ is a four-wheel drive system that sends power to all four wheels.', options:['FWD','RWD','AWD','4WD'], tr:['前驱','后驱','全时四驱','分时四驱'], answer:2, hint:'全时四驱', exp:'AWD（全时四驱）将动力传递到所有四个车轮。' },
+  { q: 'The ___ is a shaft that transmits torque from the differential to the wheels.', options:['axle','driveshaft','half shaft','strut'], tr:['车桥','传动轴','半轴','撑杆'], answer:2, hint:'半轴', exp:'Half shaft（半轴）将差速器的扭矩传递到车轮。' },
+  { q: 'A ___ is a type of gear mechanism that allows two wheels to turn at different speeds.', options:['bevel gear','planetary gear','differential','helical gear'], tr:['锥齿轮','行星齿轮','差速器','斜齿轮'], answer:2, hint:'差速器', exp:'Differential（差速器）允许两侧车轮以不同转速旋转。' },
+  // ===== 制动系统（扩展） =====
+  { q: 'The ___ is the heart of the braking system, generating hydraulic pressure.', options:['master cylinder','caliper','booster','rotor'], tr:['制动主缸','卡钳','助力器','刹车盘'], answer:0, hint:'制动主缸', exp:'Master cylinder（制动主缸）是制动系统核心，产生液压压力。' },
+  { q: 'A ___ is a component that clamps the brake pads against the rotor.', options:['caliper','master cylinder','booster','drum'], tr:['卡钳','主缸','助力器','刹车鼓'], answer:0, hint:'卡钳', exp:'Caliper（卡钳）将刹车片压向刹车盘以产生制动力。' },
+  { q: '___ braking systems use fluid to transmit braking force.', options:['Mechanical','Hydraulic','Pneumatic','Electric'], tr:['机械','液压','气压','电子'], answer:1, hint:'液压制动', exp:'Hydraulic braking（液压制动）使用液体传递制动力。' },
+  { q: 'The ___ is a safety feature that prevents wheels from locking during hard braking.', options:['ABS','EBD','ESC','TCS'], tr:['防抱死系统','电子制动力分配','车身稳定系统','牵引力控制'], answer:0, hint:'ABS', exp:'ABS（防抱死制动系统）防止急刹车时车轮抱死。' },
+  { q: '___ is a system that helps maintain vehicle stability by controlling individual brakes.', options:['ABS','ESC','EBD','TPMS'], tr:['防抱死','车身稳定系统','制动力分配','胎压监测'], answer:1, hint:'车身稳定系统', exp:'ESC（车身电子稳定系统）通过控制单个刹车维持车辆稳定。' },
+  { q: 'A ___ is a friction material that presses against the brake disc to stop the vehicle.', options:['brake pad','brake shoe','brake lining','brake drum'], tr:['刹车片','刹车蹄','刹车衬片','刹车鼓'], answer:0, hint:'刹车片', exp:'Brake pad（刹车片）是压在刹车盘上产生摩擦制动的材料。' },
+  // ===== 悬挂与转向（扩展） =====
+  { q: 'A ___ is a suspension component that absorbs shocks and supports the vehicle weight.', options:['shock absorber','spring','strut','control arm'], tr:['减震器','弹簧','撑杆','控制臂'], answer:2, hint:'撑杆', exp:'Strut（撑杆）是悬挂组件，既吸收冲击又支撑车身重量。' },
+  { q: 'The ___ is a steering system that uses a rack and pinion to turn the wheels.', options:['recirculating ball','rack and pinion','worm and roller','cam and lever'], tr:['循环球式','齿轮齿条式','蜗轮滚轮式','凸轮杠杆式'], answer:1, hint:'齿轮齿条转向', exp:'Rack and pinion（齿轮齿条转向器）是现代汽车最常见的转向机构。' },
+  { q: '___ power steering uses hydraulic pressure to assist the driver in steering.', options:['Electric','Hydraulic','Electro-hydraulic','Manual'], tr:['电动','液压','电液','手动'], answer:1, hint:'液压助力', exp:'Hydraulic power steering（液压助力转向）使用液压压力辅助转向。' },
+  { q: 'A ___ is a suspension component that controls the wheel\'s forward and backward movement.', options:['control arm','strut','spring','sway bar'], tr:['控制臂','撑杆','弹簧','横向稳定杆'], answer:0, hint:'控制臂', exp:'Control arm（控制臂）控制车轮的前后运动。' },
+  { q: 'The ___ is a bar that connects the left and right wheels to reduce body roll in turns.', options:['control arm','sway bar','strut','tie rod'], tr:['控制臂','横向稳定杆','撑杆','转向拉杆'], answer:1, hint:'横向稳定杆', exp:'Sway bar（横向稳定杆）连接左右车轮，减少转弯时车身侧倾。' },
+  // ===== 电气系统（扩展） =====
+  { q: 'The ___ is a device that stores electrical energy to start the engine and power electronics.', options:['alternator','battery','starter','capacitor'], tr:['发电机','电池','启动马达','电容'], answer:1, hint:'电池', exp:'Battery（电池）储存电能，用于启动发动机和供电。' },
+  { q: 'A ___ is a device that converts chemical energy into electrical energy.', options:['capacitor','battery','alternator','coil'], tr:['电容','电池','发电机','线圈'], answer:1, hint:'电池', exp:'Battery（电池）将化学能转化为电能。' },
+  { q: 'The ___ is the main computer that controls the engine\'s operation.', options:['ECU','ABS module','BCM','TCM'], tr:['发动机控制单元','ABS模块','车身控制模块','变速箱控制模块'], answer:0, hint:'ECU', exp:'ECU（发动机控制单元）是控制发动机运行的主计算机。' },
+  { q: '___ is a communication protocol used in vehicles for electronic control units to talk to each other.', options:['CAN bus','USB','Ethernet','Bluetooth'], tr:['CAN总线','USB','以太网','蓝牙'], answer:0, hint:'CAN总线', exp:'CAN bus（CAN总线）是车辆内电子控制单元之间通信的协议。' },
+  { q: 'A ___ is a sensor that detects the position of the crankshaft for engine timing.', options:['CMP sensor','CKP sensor','MAF sensor','TPS'], tr:['凸轮轴位置传感器','曲轴位置传感器','空气流量计','节气门位置传感器'], answer:1, hint:'曲轴位置传感器', exp:'CKP sensor（曲轴位置传感器）检测曲轴位置，用于发动机正时。' },
+  { q: 'The ___ is a device that produces the high voltage needed to create a spark in the spark plug.', options:['ignition coil','distributor','spark plug','alternator'], tr:['点火线圈','分电器','火花塞','发电机'], answer:0, hint:'点火线圈', exp:'Ignition coil（点火线圈）产生高压电使火花塞点火。' },
+  { q: '___ headlights use LED technology for brighter and more efficient lighting.', options:['Halogen','Xenon','LED','Laser'], tr:['卤素','氙气','LED','激光'], answer:2, hint:'LED大灯', exp:'LED headlights（LED大灯）更亮更节能。' },
+  // ===== 车身与安全（扩展） =====
+  { q: 'A ___ is a safety glass that is designed to shatter into small, dull pieces.', options:['tempered glass','laminated glass','tinted glass','acrylic'], tr:['钢化玻璃','夹层玻璃','着色玻璃','亚克力'], answer:0, hint:'钢化玻璃', exp:'Tempered glass（钢化玻璃）破碎时形成小钝块，减少伤害。' },
+  { q: 'The ___ is the structural frame that supports the vehicle body.', options:['chassis','monocoque','subframe','roll cage'], tr:['底盘','单体壳','副车架','防滚架'], answer:0, hint:'底盘', exp:'Chassis（底盘）是支撑车身的结构框架。' },
+  { q: 'A ___ is a body design where the body and frame are a single unit.', options:['body-on-frame','unibody','space frame','tubular'], tr:['非承载式','承载式/单体式','空间框架','管状'], answer:1, hint:'承载式车身', exp:'Unibody（承载式车身）车身和车架为整体结构。' },
+  { q: 'The ___ is a crumple zone designed to absorb impact energy in a collision.', options:['airbag','crumple zone','roll cage','bull bar'], tr:['安全气囊','吸能区','防滚架','前保险杠'], answer:1, hint:'吸能区', exp:'Crumple zone（吸能区）在碰撞时吸收冲击能量，保护乘员。' },
+  { q: 'A ___ is a device that automatically tightens the seatbelt in a crash.', options:['airbag','seatbelt pretensioner','load limiter','crumple zone'], tr:['安全气囊','安全带预紧器','限力器','吸能区'], answer:1, hint:'安全带预紧器', exp:'Seatbelt pretensioner（安全带预紧器）在碰撞时自动收紧安全带。' },
+  // ===== 贸易与商务（扩展） =====
+  { q: '___ is a trade term meaning the seller delivers goods to a carrier at a named location.', options:['FOB','FCA','EXW','DDP'], tr:['FOB离岸价','FCA货交承运人','EXW出厂价','DDP完税交货'], answer:1, hint:'FCA', exp:'FCA (Free Carrier) 卖方在指定地点将货物交给承运人。' },
+  { q: '___ is a trade term where the buyer is responsible for all costs from the factory onwards.', options:['FOB','CIF','EXW','DDP'], tr:['FOB离岸价','CIF到岸价','EXW出厂价','DDP完税交货'], answer:2, hint:'EXW', exp:'EXW (Ex Works) 买方承担从工厂起的所有费用和风险。' },
+  { q: '___ is a trade term where the seller delivers to the buyer\'s premises, paying all costs.', options:['FOB','CIF','EXW','DDP'], tr:['FOB离岸价','CIF到岸价','EXW出厂价','DDP完税交货'], answer:3, hint:'DDP', exp:'DDP (Delivered Duty Paid) 卖方承担所有费用送到买方所在地。' },
+  { q: 'A ___ is a document that details the goods, quantities, and prices in a shipment.', options:['invoice','packing list','B/L','certificate of origin'], tr:['发票','装箱单','提单','原产地证'], answer:0, hint:'发票', exp:'Commercial invoice（商业发票）详细列出货物的品名、数量和价格。' },
+  { q: 'A ___ is a document issued by the carrier acknowledging receipt of goods for shipment.', options:['invoice','bill of lading','packing list','quote'], tr:['发票','提单','装箱单','报价单'], answer:1, hint:'提单', exp:'Bill of Lading (B/L)（提单）是承运人签发的货物收据和运输合同。' },
+  { q: 'A ___ is a document that certifies the country where the goods were produced.', options:['invoice','certificate of origin','packing list','B/L'], tr:['发票','原产地证','装箱单','提单'], answer:1, hint:'原产地证', exp:'Certificate of Origin（原产地证）证明货物生产国别。' },
+  { q: '___ is a payment method where the buyer\'s bank guarantees payment to the seller.', options:['T/T','L/C','D/P','D/A'], tr:['电汇','信用证','付款交单','承兑交单'], answer:1, hint:'信用证', exp:'L/C (Letter of Credit) 信用证是买方银行保证向卖方付款的方式。' },
+  { q: '___ is a payment method where funds are transferred directly between bank accounts.', options:['T/T','L/C','D/P','D/A'], tr:['电汇','信用证','付款交单','承兑交单'], answer:0, hint:'电汇', exp:'T/T (Telegraphic Transfer) 电汇是直接在银行账户间转账的付款方式。' },
+  { q: 'A ___ is a document that lists all items in a shipment, including weight and dimensions.', options:['invoice','packing list','B/L','quote'], tr:['发票','装箱单','提单','报价单'], answer:1, hint:'装箱单', exp:'Packing list（装箱单）列出一票货物的所有项目，包括重量和尺寸。' },
+  { q: '___ is the process of clearing goods through customs.', options:['clearance','inspection','freight','logistics'], tr:['清关','检验','货运','物流'], answer:0, hint:'清关', exp:'Customs clearance（清关）是货物通过海关检查的过程。' },
+  { q: 'A ___ is a tax imposed on imported goods.', options:['tariff','quota','subsidy','embargo'], tr:['关税','配额','补贴','禁运'], answer:0, hint:'关税', exp:'Tariff（关税）是对进口商品征收的税。' },
+  { q: '___ is a limit on the quantity of goods that can be imported.', options:['tariff','quota','subsidy','embargo'], tr:['关税','配额','补贴','禁运'], answer:1, hint:'配额', exp:'Quota（配额）是对可进口商品数量的限制。' },
+  { q: '___ is a complete ban on trade with a specific country.', options:['tariff','quota','embargo','subsidy'], tr:['关税','配额','禁运','补贴'], answer:2, hint:'禁运', exp:'Embargo（禁运）是对特定国家贸易的全面禁止。' },
+  { q: 'A ___ is a financial instrument that guarantees performance or payment.', options:['letter of credit','bank guarantee','advance payment','open account'], tr:['信用证','银行保函','预付款','赊账'], answer:1, hint:'银行保函', exp:'Bank guarantee（银行保函）是保证履行义务或付款的金融工具。' },
+  { q: '___ is a shipping method where goods are packed in standard containers.', options:['bulk shipping','container shipping','LCL','FCL'], tr:['散货运输','集装箱运输','拼箱','整箱'], answer:1, hint:'集装箱运输', exp:'Container shipping（集装箱运输）用标准集装箱装运货物。' },
+  { q: '___ refers to a shipment that fills an entire container.', options:['LCL','FCL','bulk','breakbulk'], tr:['拼箱','整箱','散货','杂货'], answer:1, hint:'整箱', exp:'FCL (Full Container Load) 整箱指一票货装满整个集装箱。' },
+  { q: '___ refers to a shipment where multiple shippers share one container.', options:['LCL','FCL','bulk','breakbulk'], tr:['拼箱','整箱','散货','杂货'], answer:0, hint:'拼箱', exp:'LCL (Less than Container Load) 拼箱指多个发货人共用一个集装箱。' },
+  { q: 'A ___ is a 20-foot or 40-foot standard shipping container.', options:['TEU','FEU','pallet','crate'], tr:['20尺柜','40尺柜','托盘','板条箱'], answer:0, hint:'TEU', exp:'TEU (Twenty-foot Equivalent Unit) 20英尺标准集装箱。' },
+  // ===== 质量管理（扩展） =====
+  { q: '___ is a methodology for reducing defects through statistical analysis.', options:['Six Sigma','Lean','Kaizen','5S'], tr:['六西格玛','精益','改善','5S'], answer:0, hint:'六西格玛', exp:'Six Sigma（六西格玛）通过统计分析减少缺陷的方法论。' },
+  { q: '___ is a Japanese term meaning continuous improvement.', options:['Kaizen','Kanban','Poka-yoke','Jidoka'], tr:['改善','看板','防错','自働化'], answer:0, hint:'改善', exp:'Kaizen（改善）是持续改进的日语术语。' },
+  { q: '___ is a system to prevent defects by designing mistakes out of the process.', options:['Poka-yoke','Kanban','5S','Kaizen'], tr:['防错','看板','5S','改善'], answer:0, hint:'防错', exp:'Poka-yoke（防错）通过设计使错误无法发生的系统。' },
+  { q: '___ is a workplace organization method: Sort, Set, Shine, Standardize, Sustain.', options:['5S','Six Sigma','PDCA','FMEA'], tr:['5S','六西格玛','PDCA','FMEA'], answer:0, hint:'5S', exp:'5S（整理、整顿、清扫、清洁、素养）是工作场所组织方法。' },
+  { q: '___ is a systematic method for analyzing potential failure modes.', options:['FMEA','FTA','SPC','MSA'], tr:['失效模式分析','故障树分析','统计过程控制','测量系统分析'], answer:0, hint:'FMEA', exp:'FMEA (Failure Mode and Effects Analysis) 失效模式与影响分析。' },
+  { q: '___ is a tool used to identify the root cause of a problem.', options:['Fishbone diagram','Pareto chart','Flowchart','Histogram'], tr:['鱼骨图','帕累托图','流程图','直方图'], answer:0, hint:'鱼骨图', exp:'Fishbone diagram（鱼骨图/因果图）用于识别问题根本原因。' },
+  { q: '___ is the principle that 80% of problems come from 20% of causes.', options:['Pareto principle','Murphy\'s law','80/20 rule','Both A and C'], tr:['帕累托原理','墨菲定律','80/20法则','A和C都是'], answer:3, hint:'80/20法则', exp:'Pareto principle（帕累托原理/80/20法则）80%的问题来自20%的原因。' },
+  { q: '___ is a statistical method to monitor and control a process.', options:['SPC','FMEA','FTA','APQP'], tr:['统计过程控制','失效模式分析','故障树分析','先期产品质量策划'], answer:0, hint:'SPC', exp:'SPC (Statistical Process Control) 统计过程控制用于监控和控制过程。' },
+  { q: '___ is a structured method for planning product quality before production.', options:['APQP','PPAP','SPC','MSA'], tr:['先期产品质量策划','生产件批准程序','统计过程控制','测量系统分析'], answer:0, hint:'APQP', exp:'APQP (Advanced Product Quality Planning) 先期产品质量策划。' },
+  { q: '___ is a process where suppliers submit sample parts for customer approval.', options:['PPAP','APQP','FMEA','SPC'], tr:['生产件批准程序','先期产品质量策划','失效模式分析','统计过程控制'], answer:0, hint:'PPAP', exp:'PPAP (Production Part Approval Process) 生产件批准程序。' },
+  { q: 'A ___ is a formal record of a defect or nonconformance.', options:['NCR','CAPA','FMEA','DFMEA'], tr:['不合格品报告','纠正预防措施','失效模式分析','设计失效分析'], answer:0, hint:'不合格品报告', exp:'NCR (Non-Conformance Report) 不合格品报告。' },
+  { q: '___ is a process to identify and fix the root cause of a problem to prevent recurrence.', options:['CAPA','NCR','FMEA','PPAP'], tr:['纠正预防措施','不合格品报告','失效模式分析','生产件批准'], answer:0, hint:'CAPA', exp:'CAPA (Corrective and Preventive Action) 纠正预防措施。' },
+  // ===== 商务沟通（扩展） =====
+  { q: 'A ___ is a formal document offering to supply goods at specified prices.', options:['quote','invoice','PO','contract'], tr:['报价单','发票','采购订单','合同'], answer:0, hint:'报价单', exp:'Quote（报价单）是按指定价格供货的正式文件。' },
+  { q: '___ is the percentage of profit divided by revenue.', options:['margin','markup','profit','revenue'], tr:['利润率','加成率','利润','收入'], answer:0, hint:'利润率', exp:'Margin（利润率）是利润占收入的百分比。' },
+  { q: '___ is the amount added to the cost to determine the selling price.', options:['margin','markup','discount','rebate'], tr:['利润率','加成','折扣','返利'], answer:1, hint:'加成', exp:'Markup（加成）是成本上加上的金额，用于确定售价。' },
+  { q: 'A ___ is a reduction in price offered to customers.', options:['discount','rebate','surcharge','tariff'], tr:['折扣','返利','附加费','关税'], answer:0, hint:'折扣', exp:'Discount（折扣）是给客户的价格减免。' },
+  { q: 'A ___ is a refund given after the purchase, based on volume.', options:['discount','rebate','markup','margin'], tr:['折扣','返利','加成','利润率'], answer:1, hint:'返利', exp:'Rebate（返利）是购买后根据数量返还的金额。' },
+  { q: '___ is the minimum order quantity a supplier will accept.', options:['MOQ','EOQ','JIT','FIFO'], tr:['最低订购量','经济订货量','准时制','先进先出'], answer:0, hint:'MOQ', exp:'MOQ (Minimum Order Quantity) 最低订购量。' },
+  { q: '___ is the time between placing an order and receiving the goods.', options:['lead time','cycle time','turnaround','delivery'], tr:['交货期','周期时间','周转时间','交付'], answer:0, hint:'交货期', exp:'Lead time（交货期）是下单到收货之间的时间。' },
+  { q: 'A ___ is a document that confirms the terms agreed by both parties.', options:['contract','quote','invoice','packing list'], tr:['合同','报价单','发票','装箱单'], answer:0, hint:'合同', exp:'Contract（合同）是双方确认条款的文件。' },
+  { q: '___ is a method of inventory management where stock is rotated oldest-first.', options:['FIFO','LIFO','JIT','FEFO'], tr:['先进先出','后进先出','准时制','先到期先出'], answer:0, hint:'FIFO', exp:'FIFO (First In First Out) 先进先出库存管理。' },
+  { q: '___ is the total cost of holding inventory over a period.', options:['carrying cost','ordering cost','stockout cost','setup cost'], tr:['持有成本','订货成本','缺货成本','准备成本'], answer:0, hint:'持有成本', exp:'Carrying cost（持有成本）是一段时间内持有库存的总成本。' },
+  { q: 'A ___ is a person who represents a company\'s products in a specific region.', options:['distributor','agent','broker','retailer'], tr:['经销商','代理','经纪人','零售商'], answer:0, hint:'经销商', exp:'Distributor（经销商）在特定区域代理公司产品。' },
+  { q: 'A ___ is a person who negotiates between buyers and sellers for a commission.', options:['distributor','agent','broker','wholesaler'], tr:['经销商','代理','经纪人','批发商'], answer:2, hint:'经纪人', exp:'Broker（经纪人）为买卖双方撮合交易并收取佣金。' },
+  { q: '___ refers to selling products directly to end consumers.', options:['wholesale','retail','distribution','agency'], tr:['批发','零售','经销','代理'], answer:1, hint:'零售', exp:'Retail（零售）直接向终端消费者销售。' },
+  { q: '___ refers to selling goods in large quantities to businesses.', options:['wholesale','retail','distribution','agency'], tr:['批发','零售','经销','代理'], answer:0, hint:'批发', exp:'Wholesale（批发）大批量向企业销售商品。' },
+  // ===== 物流与运输（扩展） =====
+  { q: '___ is the process of moving goods from the factory to the customer.', options:['logistics','manufacturing','procurement','quality control'], tr:['物流','制造','采购','质量控制'], answer:0, hint:'物流', exp:'Logistics（物流）是将货物从工厂运到客户的过程。' },
+  { q: 'A ___ is a document that accompanies a shipment and lists its contents.', options:['packing list','invoice','B/L','quote'], tr:['装箱单','发票','提单','报价单'], answer:0, hint:'装箱单', exp:'Packing list（装箱单）随货列出货物内容。' },
+  { q: '___ is a shipping method for urgent, high-value, low-weight goods.', options:['air freight','sea freight','rail','road'], tr:['空运','海运','铁路','公路'], answer:0, hint:'空运', exp:'Air freight（空运）用于紧急、高价值、低重量货物。' },
+  { q: '___ is the cheapest shipping method for heavy goods over long distances.', options:['air freight','sea freight','courier','road'], tr:['空运','海运','快递','公路'], answer:1, hint:'海运', exp:'Sea freight（海运）是长途重货最便宜的运输方式。' },
+  { q: 'A ___ is a company that organizes shipments on behalf of shippers.', options:['freight forwarder','customs broker','carrier','courier'], tr:['货运代理','清关代理','承运人','快递'], answer:0, hint:'货运代理', exp:'Freight forwarder（货运代理）为发货人组织货物运输。' },
+  { q: 'A ___ is a company that transports goods.', options:['carrier','forwarder','broker','shipper'], tr:['承运人','代理','经纪人','发货人'], answer:0, hint:'承运人', exp:'Carrier（承运人）是运输货物的公司。' },
+  { q: '___ is the process of tracking goods through the supply chain.', options:['traceability','inspection','quality control','logistics'], tr:['可追溯性','检验','质量控制','物流'], answer:0, hint:'可追溯性', exp:'Traceability（可追溯性）是通过供应链追踪货物的过程。' },
+  // ===== 汽车新技术（扩展） =====
+  { q: '___ is a technology that allows a vehicle to drive itself without human input.', options:['autonomous driving','adaptive cruise','lane assist','parking assist'], tr:['自动驾驶','自适应巡航','车道辅助','泊车辅助'], answer:0, hint:'自动驾驶', exp:'Autonomous driving（自动驾驶）让车辆无需人类操作即可行驶。' },
+  { q: 'A ___ is a battery that can be recharged and used many times.', options:['primary battery','rechargeable battery','fuel cell','supercapacitor'], tr:['一次电池','可充电电池','燃料电池','超级电容'], answer:1, hint:'可充电电池', exp:'Rechargeable battery（可充电电池）可反复充电使用。' },
+  { q: '___ is a type of battery commonly used in electric vehicles.', options:['Lead-acid','Lithium-ion','NiMH','NiCd'], tr:['铅酸','锂离子','镍氢','镍镉'], answer:1, hint:'锂离子电池', exp:'Lithium-ion battery（锂离子电池）常用于电动汽车。' },
+  { q: '___ is the distance an electric vehicle can travel on a single charge.', options:['range','mileage','efficiency','capacity'], tr:['续航里程','里程','效率','容量'], answer:0, hint:'续航里程', exp:'Range（续航里程）是电动车单次充电可行驶的距离。' },
+  { q: 'A ___ is a station where electric vehicles can recharge their batteries.', options:['gas station','charging station','battery swap','service center'], tr:['加油站','充电站','换电站','服务中心'], answer:1, hint:'充电站', exp:'Charging station（充电站）是电动车充电的场所。' },
+  { q: '___ is a technology that uses cameras and sensors to detect objects around the vehicle.', options:['ADAS','ABS','ESC','TPMS'], tr:['高级驾驶辅助系统','防抱死','车身稳定','胎压监测'], answer:0, hint:'ADAS', exp:'ADAS (Advanced Driver Assistance Systems) 用摄像头和传感器检测周围物体。' },
+  { q: '___ is a feature that maintains a set speed and distance from the car ahead.', options:['adaptive cruise control','lane keeping','blind spot detection','auto parking'], tr:['自适应巡航','车道保持','盲区检测','自动泊车'], answer:0, hint:'自适应巡航', exp:'Adaptive cruise control（自适应巡航）保持设定速度和与前车距离。' },
+  { q: '___ is a feature that warns the driver when another vehicle is in the blind spot.', options:['lane keeping','blind spot detection','adaptive cruise','auto parking'], tr:['车道保持','盲区检测','自适应巡航','自动泊车'], answer:1, hint:'盲区检测', exp:'Blind spot detection（盲区检测）提醒驾驶员盲区有车辆。' },
+  { q: 'A ___ is a vehicle that uses both a petrol engine and an electric motor.', options:['BEV','HEV','PHEV','FCEV'], tr:['纯电动','混合动力','插电混动','燃料电池'], answer:1, hint:'混合动力', exp:'HEV (Hybrid Electric Vehicle) 混合动力车同时使用燃油发动机和电机。' },
+  { q: 'A ___ is a vehicle that can be plugged in to charge its battery.', options:['BEV','HEV','PHEV','MHEV'], tr:['纯电动','混合动力','插电混动','轻混'], answer:2, hint:'插电混动', exp:'PHEV (Plug-in Hybrid Electric Vehicle) 插电式混合动力车可外接充电。' },
+  { q: 'A ___ is a vehicle powered entirely by electricity, with no engine.', options:['BEV','HEV','PHEV','FCEV'], tr:['纯电动','混合动力','插电混动','燃料电池'], answer:0, hint:'纯电动', exp:'BEV (Battery Electric Vehicle) 纯电动车完全由电力驱动。' },
+  { q: 'A ___ is a vehicle that uses hydrogen to generate electricity.', options:['BEV','HEV','PHEV','FCEV'], tr:['纯电动','混合动力','插电混动','燃料电池'], answer:3, hint:'燃料电池', exp:'FCEV (Fuel Cell Electric Vehicle) 燃料电池车用氢气发电驱动。' },
+  { q: '___ is a communication technology that allows vehicles to talk to each other.', options:['V2V','CAN','WiFi','Bluetooth'], tr:['车对车通信','CAN总线','WiFi','蓝牙'], answer:0, hint:'V2V', exp:'V2V (Vehicle-to-Vehicle) 车对车通信技术让车辆之间交换信息。' },
+  // ===== 综合术语（扩展） =====
+  { q: '___ is the process of testing a product to ensure it meets specifications.', options:['inspection','testing','certification','validation'], tr:['检验','测试','认证','验证'], answer:0, hint:'检验', exp:'Inspection（检验）是测试产品是否符合规格的过程。' },
+  { q: '___ is the process of officially recognizing that a product meets standards.', options:['certification','inspection','testing','audit'], tr:['认证','检验','测试','审核'], answer:0, hint:'认证', exp:'Certification（认证）是正式确认产品符合标准的过程。' },
+  { q: 'A ___ is a formal examination of a company\'s processes or systems.', options:['audit','inspection','survey','review'], tr:['审核','检验','调查','评审'], answer:0, hint:'审核', exp:'Audit（审核）是对公司流程或系统的正式检查。' },
+  { q: '___ is the process of verifying that a product meets customer requirements.', options:['validation','verification','testing','inspection'], tr:['确认','验证','测试','检验'], answer:0, hint:'确认', exp:'Validation（确认）是验证产品满足客户需求的过程。' },
+  { q: '___ is the process of checking that design outputs meet design inputs.', options:['verification','validation','testing','inspection'], tr:['验证','确认','测试','检验'], answer:0, hint:'验证', exp:'Verification（验证）是检查设计输出是否符合设计输入的过程。' },
+  { q: 'A ___ is a written guarantee that a product will work for a specified period.', options:['warranty','guarantee','certificate','license'], tr:['质保','保证','证书','许可证'], answer:0, hint:'质保', exp:'Warranty（质保）是产品在指定期限内正常工作的书面保证。' },
+  { q: '___ is the total cost of owning a product over its lifetime.', options:['TCO','ROI','NPV','IRR'], tr:['总拥有成本','投资回报率','净现值','内部收益率'], answer:0, hint:'TCO', exp:'TCO (Total Cost of Ownership) 总拥有成本，包含购买、使用、维护等所有费用。' },
+  { q: '___ is a measure of how efficiently a company uses its capital.', options:['ROI','TCO','NPV','EBITDA'], tr:['投资回报率','总拥有成本','净现值','息税折旧摊销前利润'], answer:0, hint:'ROI', exp:'ROI (Return on Investment) 投资回报率，衡量资金使用效率。' },
+  { q: 'A ___ is a plan that outlines a company\'s goals and how to achieve them.', options:['business plan','budget','forecast','strategy'], tr:['商业计划','预算','预测','战略'], answer:0, hint:'商业计划', exp:'Business plan（商业计划）概述公司目标及实现方法。' },
+  { q: '___ is the process of forecasting future sales based on past data.', options:['forecasting','budgeting','planning','analysis'], tr:['预测','预算','规划','分析'], answer:0, hint:'预测', exp:'Forecasting（预测）是基于历史数据预测未来销售。' },
+  { q: 'A ___ is a document that shows expected income and expenses for a period.', options:['budget','invoice','quote','contract'], tr:['预算','发票','报价单','合同'], answer:0, hint:'预算', exp:'Budget（预算）显示一段时间内预期收入和支出。' },
+  { q: '___ is the difference between actual and budgeted amounts.', options:['variance','margin','surplus','deficit'], tr:['差异','利润率','盈余','赤字'], answer:0, hint:'差异', exp:'Variance（差异）是实际金额与预算金额之差。' },
+  { q: '___ is a measure of customer satisfaction with a product or service.', options:['CSAT','NPS','ROI','KPI'], tr:['客户满意度','净推荐值','投资回报率','关键绩效指标'], answer:0, hint:'客户满意度', exp:'CSAT (Customer Satisfaction) 客户满意度衡量指标。' },
+  { q: '___ measures how likely customers are to recommend a product to others.', options:['NPS','CSAT','ROI','KPI'], tr:['净推荐值','客户满意度','投资回报率','关键绩效指标'], answer:0, hint:'净推荐值', exp:'NPS (Net Promoter Score) 净推荐值，衡量客户推荐意愿。' },
+  { q: 'A ___ is a measurable value that shows how well a company is achieving its goals.', options:['KPI','NPS','ROI','TCO'], tr:['关键绩效指标','净推荐值','投资回报率','总拥有成本'], answer:0, hint:'KPI', exp:'KPI (Key Performance Indicator) 关键绩效指标。' },
+];
+
+// 跟读练习句子库（商务 + 汽车行业）
+const SPEAK_BANK = [
+  { en:'Could you please send me the latest price list for your brake systems?', zh:'请问您能把最新刹车系统价格表发给我吗？' },
+  { en:'Our company specializes in manufacturing high-quality auto parts.', zh:'我们公司专门生产高品质汽车零部件。' },
+  { en:'What is the minimum order quantity for this product?', zh:'这款产品的最低订购量是多少？' },
+  { en:'The delivery time is typically four to six weeks.', zh:'交货期通常是四到六周。' },
+  { en:'We offer a one-year warranty on all our products.', zh:'我们所有产品提供一年质保。' },
+  { en:'Could we negotiate the price if we increase the order volume?', zh:'如果我们增加订单量，价格可以谈吗？' },
+  { en:'This component meets the IATF 16949 quality standard.', zh:'该部件符合IATF 16949质量标准。' },
+  { en:'Please find attached the quotation for your reference.', zh:'请查收附件中的报价单供您参考。' },
+  { en:'We would like to schedule a factory visit next month.', zh:'我们想安排下个月参观工厂。' },
+  { en:'The samples will be ready for shipment by Friday.', zh:'样品将于周五前准备好发货。' },
+  { en:'Thank you for your interest in our products.', zh:'感谢您对我们产品的关注。' },
+  { en:'Our lead time has been improved to three weeks.', zh:'我们的交货期已缩短至三周。' },
+  { en:'Can you provide the technical specification sheet?', zh:'您能提供技术规格说明书吗？' },
+  { en:'We are a leading supplier of automotive components in China.', zh:'我们是中国领先的汽车零部件供应商。' },
+  { en:'The payment terms are thirty percent deposit in advance.', zh:'付款条件是预付百分之三十定金。' },
+  { en:'I will follow up with you after the exhibition.', zh:'展会结束后我会跟您联系。' },
+  { en:'Our products are exported to over thirty countries worldwide.', zh:'我们的产品出口到全球三十多个国家。' },
+  { en:'Please let me know if you need any further information.', zh:'如果您需要更多信息请告诉我。' },
+  { en:'The new model features improved fuel efficiency.', zh:'新款具有更好的燃油经济性。' },
+  { en:'We look forward to a long-term business partnership.', zh:'我们期待长期的商业合作伙伴关系。' },
+  // 扩充句子
+  { en:'Our brake pads are designed for high performance and long service life.', zh:'我们的刹车片专为高性能和长寿命设计。' },
+  { en:'Could you please confirm the shipping schedule for our next order?', zh:'请确认我们下一单的船期好吗？' },
+  { en:'The IATF 16949 certification ensures our quality meets global standards.', zh:'IATF 16949认证确保我们的质量符合全球标准。' },
+  { en:'We have implemented strict quality control at every production stage.', zh:'我们在每个生产阶段都执行严格的质量控制。' },
+  { en:'The samples have passed all required tests with excellent results.', zh:'样品已通过所有要求的测试，结果优秀。' },
+  { en:'I will send you the updated quotation by the end of today.', zh:'我今天下班前会把更新后的报价发给您。' },
+  { en:'Our factory has a monthly capacity of fifty thousand units.', zh:'我们工厂月产能五万件。' },
+  { en:'We accept T/T and letter of credit as payment methods.', zh:'我们接受电汇和信用证作为付款方式。' },
+  { en:'The lead time for this product is currently three to four weeks.', zh:'这款产品目前交货期三到四周。' },
+  { en:'Could we arrange a video call to discuss the technical details?', zh:'我们可以安排视频会议讨论技术细节吗？' },
+  { en:'Our products are compatible with most European and Japanese models.', zh:'我们的产品兼容大多数欧系和日系车型。' },
+  { en:'We offer competitive pricing without compromising on quality.', zh:'我们提供有竞争力的价格，同时不牺牲质量。' },
+  { en:'The defect rate of our products is below zero point three percent.', zh:'我们产品的缺陷率低于百分之零点三。' },
+  { en:'Please find the technical specification sheet attached to this email.', zh:'请查看邮件附件中的技术规格表。' },
+  { en:'We can customize the packaging according to your requirements.', zh:'我们可以根据您的要求定制包装。' },
+  { en:'Our R&D team is working on several new products for next year.', zh:'我们的研发团队正在开发明年的几款新产品。' },
+  { en:'The exhibition will be held in Frankfurt from September twelfth.', zh:'展会将于9月12日起在法兰克福举行。' },
+  { en:'We would like to invite you to visit our booth at the auto show.', zh:'我们诚邀您参观我们在车展的展位。' },
+  { en:'The market demand for electric vehicle components is growing rapidly.', zh:'电动车零部件的市场需求正在快速增长。' },
+  { en:'We have obtained all necessary certifications for the European market.', zh:'我们已获得欧洲市场所有必要的认证。' },
+  { en:'Could you provide a forecast for your demand in the next quarter?', zh:'您能提供下季度的需求预测吗？' },
+  { en:'We maintain a safety stock to ensure timely delivery.', zh:'我们保持安全库存以确保及时交付。' },
+  { en:'The price includes packaging but excludes shipping and insurance.', zh:'价格含包装，不含运费和保险。' },
+  { en:'We are committed to sustainable and environmentally friendly manufacturing.', zh:'我们致力于可持续和环保的制造。' },
+  { en:'Let me check with our engineering team and get back to you.', zh:'让我和工程团队确认后回复您。' },
+  { en:'Our products come with a two-year warranty against manufacturing defects.', zh:'我们的产品提供两年质保，针对制造缺陷。' },
+  { en:'We can provide material certificates and test reports upon request.', zh:'我们可以按要求提供材料证书和测试报告。' },
+  { en:'The new regulation will take effect from January next year.', zh:'新规将于明年1月起生效。' },
+  { en:'We have recently upgraded our production line for higher efficiency.', zh:'我们最近升级了生产线以提高效率。' },
+  { en:'Thank you for your continued trust in our products.', zh:'感谢您一直对我们产品的信任。' },
+];
+
+let quizState = null;
+let speakState = null;
+
+function initEnglish() {
+  if (!quizState || quizState.finished) startQuiz();
+  if (!speakState || speakState.finished) startSpeak();
+  renderBBCList();
+}
+
+document.querySelectorAll('.learn-tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.learn-tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    const mode = t.dataset.mode;
+    document.getElementById('quizMode').style.display = mode === 'quiz' ? '' : 'none';
+    document.getElementById('speakMode').style.display = mode === 'speak' ? '' : 'none';
+    document.getElementById('bbcMode').style.display = mode === 'bbc' ? '' : 'none';
+    if (mode === 'bbc') renderBBCList();
+    else hideBBCPlayer();
+  });
+});
+
+/* ==================== BBC 随身英语 ==================== */
+const BBC_ARTICLES = [
+  {
+    id: 'a1',
+    title: 'How to build trust with overseas clients',
+    zh: '如何与海外客户建立信任',
+    words: 328,
+    duration: '2:45',
+    level: 3200,
+    vocab: [
+      { word: 'trust', meaning: '信任' }, { word: 'overseas', meaning: '海外的' }, { word: 'client', meaning: '客户' },
+      { word: 'reliable', meaning: '可靠的' }, { word: 'deadline', meaning: '截止日期' }, { word: 'partnership', meaning: '合作关系' }
+    ],
+    sentences: [
+      { en: 'Building trust with overseas clients takes time, but it starts with honest communication.', zh: '与海外客户建立信任需要时间，但始于诚实的沟通。' },
+      { en: 'Always reply to emails within 24 hours, even if you only say you are checking the details.', zh: '始终在24小时内回复邮件，即使你只是说明正在核实细节。' },
+      { en: 'When problems happen, tell your client early and offer a clear solution.', zh: '出现问题时，尽早告知客户并提供清晰的解决方案。' },
+      { en: 'Reliable delivery is often more important than the lowest price.', zh: '可靠的交付往往比最低价格更重要。' },
+      { en: 'If you meet every deadline, clients will see you as a true partner.', zh: '如果你能遵守每一个截止日期，客户会视你为真正的合作伙伴。' },
+      { en: 'Small gifts or holiday greetings can also help keep the relationship warm.', zh: '小礼物或节日问候也有助于维持关系温度。' }
+    ]
+  },
+  {
+    id: 'a2',
+    title: 'The future of electric cars',
+    zh: '电动汽车的未来',
+    words: 356,
+    duration: '2:58',
+    level: 3500,
+    vocab: [
+      { word: 'electric', meaning: '电动的' }, { word: 'battery', meaning: '电池' }, { word: 'range', meaning: '续航里程' },
+      { word: 'charging', meaning: '充电' }, { word: 'autonomous', meaning: '自动驾驶的' }, { word: 'sustainable', meaning: '可持续的' }
+    ],
+    sentences: [
+      { en: 'Electric cars are changing the global auto industry faster than anyone expected.', zh: '电动汽车改变全球汽车行业的速度超出所有人预期。' },
+      { en: 'Battery technology keeps improving, making long-range driving more affordable.', zh: '电池技术不断进步，使长距离驾驶变得更加经济。' },
+      { en: 'Many countries plan to stop selling new petrol cars by 2035.', zh: '许多国家计划在2035年前停止销售新的燃油汽车。' },
+      { en: 'China now leads the world in electric vehicle production and sales.', zh: '中国目前在电动汽车生产和销售方面领先世界。' },
+      { en: 'Autonomous driving features are becoming standard in premium models.', zh: '自动驾驶功能正成为高端车型的标配。' },
+      { en: 'For auto parts suppliers, this means a huge opportunity in new components.', zh: '对零部件供应商来说，这意味着新零部件的巨大机遇。' }
+    ]
+  },
+  {
+    id: 'a3',
+    title: 'Why quality control matters in manufacturing',
+    zh: '为什么质量控制对制造业至关重要',
+    words: 312,
+    duration: '2:36',
+    level: 3400,
+    vocab: [
+      { word: 'quality', meaning: '质量' }, { word: 'control', meaning: '控制' }, { word: 'defect', meaning: '缺陷' },
+      { word: 'inspection', meaning: '检查' }, { word: 'standard', meaning: '标准' }, { word: 'recall', meaning: '召回' }
+    ],
+    sentences: [
+      { en: 'In the auto parts industry, one small defect can cause a big problem.', zh: '在汽车行业，一个小缺陷可能引发大问题。' },
+      { en: 'Quality control starts from the moment raw materials enter the factory.', zh: '质量控制从原材料进厂的那一刻就开始了。' },
+      { en: 'Every step of production should follow clear written standards.', zh: '生产过程的每一步都应遵循明确的书面标准。' },
+      { en: 'Regular inspection helps find mistakes before products reach the customer.', zh: '定期检查有助于在产品到达客户之前发现错误。' },
+      { en: 'A product recall can cost a company millions of dollars and damage its reputation.', zh: '一次产品召回可能让公司损失数百万美元并损害声誉。' },
+      { en: 'That is why many suppliers follow the IATF 16949 quality management system.', zh: '这就是为什么许多供应商遵循 IATF 16949 质量管理体系。' }
+    ]
+  },
+  {
+    id: 'a4',
+    title: 'How to negotiate prices with international buyers',
+    zh: '如何与国际买家谈价格',
+    words: 345,
+    duration: '2:52',
+    level: 3600,
+    vocab: [
+      { word: 'negotiate', meaning: '谈判' }, { word: 'quote', meaning: '报价' }, { word: 'margin', meaning: '利润' },
+      { word: 'volume', meaning: '数量' }, { word: 'discount', meaning: '折扣' }, { word: 'payment', meaning: '付款' }
+    ],
+    sentences: [
+      { en: 'Price negotiation is a normal part of international trade.', zh: '价格谈判是国际贸易中的正常环节。' },
+      { en: 'Before you quote, make sure you understand the buyer\'s real needs and order volume.', zh: '报价前，确保你了解买家的真实需求和订单量。' },
+      { en: 'Never give your best price at the beginning of the discussion.', zh: '不要在讨论一开始就给出你的底价。' },
+      { en: 'If the buyer asks for a discount, offer something in return, such as faster delivery.', zh: '如果买家要求折扣，可以要求一些回报，例如更快的交货。' },
+      { en: 'Long-term partnerships are more valuable than one-time high profits.', zh: '长期合作关系比一次性高利润更有价值。' },
+      { en: 'Always confirm the payment terms and currency before signing the contract.', zh: '在签署合同前，务必确认付款条款和币种。' }
+    ]
+  },
+  {
+    id: 'a5',
+    title: 'The basics of global shipping for auto parts',
+    zh: '汽车零部件全球运输基础',
+    words: 338,
+    duration: '2:48',
+    level: 3300,
+    vocab: [
+      { word: 'shipping', meaning: '运输' }, { word: 'freight', meaning: '货运' }, { word: 'container', meaning: '集装箱' },
+      { word: 'customs', meaning: '海关' }, { word: 'incoterms', meaning: '国际贸易术语' }, { word: 'logistics', meaning: '物流' }
+    ],
+    sentences: [
+      { en: 'Choosing the right shipping method can save both time and money.', zh: '选择合适的运输方式可以节省时间和金钱。' },
+      { en: 'For heavy auto parts, sea freight is usually the cheapest option.', zh: '对于重型汽车零部件，海运通常是最便宜的选择。' },
+      { en: 'Air freight is fast but much more expensive, so it is best for urgent samples.', zh: '空运很快但贵得多，最适合紧急样品。' },
+      { en: 'Incoterms like FOB and CIF decide who pays for transport and insurance.', zh: 'FOB、CIF 等贸易术语决定了谁支付运费和保险费。' },
+      { en: 'Customs documents must be accurate to avoid delays at the border.', zh: '海关文件必须准确，以避免在边境延误。' },
+      { en: 'A good logistics partner can help you track every shipment in real time.', zh: '一个好的物流合作伙伴可以帮助你实时追踪每一票货物。' }
+    ]
+  }
+];
+
+let bbcArticle = null;      // 当前播放的文章
+let bbcSentenceIdx = 0;     // 当前句子索引
+let bbcPlaying = false;     // 是否正在连续播放
+let bbcRate = 1.0;          // 播放倍速（默认正常语速，更清晰）
+let bbcShowZh = false;       // 默认盲听，不显示中文
+let bbcUtterance = null;    // 当前语音实例
+
+function renderBBCList() {
+  const view = document.getElementById('bbcListView');
+  const detail = document.getElementById('bbcArticleView');
+  view.style.display = '';
+  detail.style.display = 'none';
+  hideBBCPlayer();
+
+  const listens = Store.get('bbcListens', {});
+
+  view.innerHTML = `
+    <div class="bbc-intro">
+      <div class="title">🌍 英语学习 · BBC 随身英语</div>
+      <div class="desc">每天 10 分钟盲听练习。选一篇文章，用「阅读模式」切换译文，用底部播放器逐句朗读、调倍速、做单词训练。</div>
+    </div>
+    <div class="bbc-section-title">🎧 共 ${BBC_ARTICLES.length} 篇文章，点选一篇开始盲听</div>
+    <div class="bbc-list">
+      ${BBC_ARTICLES.map(a => `
+        <div class="bbc-item" data-id="${a.id}">
+          <div class="head">
+            <h3>${a.title}</h3>
+            <span class="badge-bbc">BBC</span>
+          </div>
+          <div class="zh">${a.zh}</div>
+          <div class="meta">
+            <span>📝 ${a.words} 词</span>
+            <span>⏱ ${a.duration}</span>
+            <span>🎯 词汇量 ${a.level}</span>
+            <span>🎧 已听 ${listens[a.id] || 0} 次</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  document.querySelectorAll('.bbc-item').forEach(item => {
+    item.addEventListener('click', () => openBBCArticle(item.dataset.id));
+  });
+}
+
+function openBBCArticle(id) {
+  const article = BBC_ARTICLES.find(a => a.id === id);
+  if (!article) return;
+  bbcArticle = article;
+  bbcSentenceIdx = 0;
+  bbcPlaying = false;
+
+  const view = document.getElementById('bbcListView');
+  const detail = document.getElementById('bbcArticleView');
+  view.style.display = 'none';
+  detail.style.display = '';
+
+  renderBBCSentences();
+  showBBCPlayer();
+  updateBBCTitle();
+
+  // 记录已听次数
+  const listens = Store.get('bbcListens', {});
+  listens[id] = (listens[id] || 0) + 1;
+  Store.set('bbcListens', listens);
+  markStudyToday();
+}
+
+function renderBBCSentences() {
+  const detail = document.getElementById('bbcArticleView');
+  const article = bbcArticle;
+
+  detail.innerHTML = `
+    <div class="bbc-back" id="bbcBack">← 返回文章列表</div>
+    <div class="bbc-article-header">
+      <h2>${article.title}</h2>
+      <div class="zh">${article.zh}</div>
+      <div class="toolbar">
+        <button class="chip ${bbcShowZh ? 'active' : ''}" id="toggleZh">📖 阅读模式</button>
+        <button class="chip" id="showVocab">📝 单词训练</button>
+        <button class="chip" id="bbcTestVoice">🔊 试听发音</button>
+      </div>
+    </div>
+    <div class="bbc-vocab-card" id="vocabCard" style="display:none">
+      <strong>重点词汇：</strong><br>
+      ${article.vocab.map(v => `• <strong>${v.word}</strong>：${v.meaning}`).join('<br>')}
+    </div>
+    <div class="bbc-sentences" id="bbcSentences">
+      ${article.sentences.map((s, i) => `
+        <div class="bbc-sentence ${bbcShowZh ? 'show-zh' : ''}" data-idx="${i}">
+          <div class="en">${highlightWords(s.en, article.vocab)}</div>
+          <div class="zh">${s.zh}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  document.getElementById('bbcBack').addEventListener('click', () => {
+    stopBBCSpeech();
+    document.getElementById('pageTitle').textContent = pageTitles.english;
+    renderBBCList();
+  });
+  document.getElementById('toggleZh').addEventListener('click', () => {
+    bbcShowZh = !bbcShowZh;
+    document.getElementById('toggleZh').classList.toggle('active', bbcShowZh);
+    document.querySelectorAll('.bbc-sentence').forEach(el => el.classList.toggle('show-zh', bbcShowZh));
+  });
+  document.getElementById('showVocab').addEventListener('click', () => {
+    const card = document.getElementById('vocabCard');
+    card.style.display = card.style.display === 'none' ? 'block' : 'none';
+  });
+  document.getElementById('bbcTestVoice').addEventListener('click', () => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      // 播放一句短英文激活语音引擎
+      const u = new SpeechSynthesisUtterance('Hello, this is a test of the English voice.');
+      u.lang = 'en-GB';
+      u.rate = 0.9;
+      if (enGBVoices.length > 0) u.voice = enGBVoices[0];
+      else if (enVoices.length > 0) u.voice = enVoices[0];
+      window.speechSynthesis.speak(u);
+      showUpdateToast('🔊 正在试听英音发音...');
+    } else {
+      showUpdateToast('⚠️ 您的浏览器不支持语音合成');
+    }
+  });
+
+  document.querySelectorAll('.bbc-sentence').forEach(el => {
+    el.addEventListener('click', () => playBBCSentence(parseInt(el.dataset.idx)));
+  });
+
+  scrollToBBCSentence(0);
+}
+
+function highlightWords(text, vocab) {
+  let html = text;
+  vocab.forEach(v => {
+    const re = new RegExp(`\\b${v.word}\\b`, 'gi');
+    html = html.replace(re, `<span class="word" title="${v.meaning}">$&</span>`);
+  });
+  return html;
+}
+
+function showBBCPlayer() {
+  let player = document.getElementById('bbcPlayer');
+  if (!player) {
+    player = document.createElement('div');
+    player.id = 'bbcPlayer';
+    player.className = 'bbc-player';
+    player.innerHTML = `
+      <div class="progress-wrap">
+        <span class="time" id="bbcCur">0:00</span>
+        <input type="range" id="bbcProgress" min="0" max="100" value="0">
+        <span class="time" id="bbcDur">0:00</span>
+      </div>
+      <div class="controls">
+        <button class="ctrl-btn" id="bbcPrev">⏮</button>
+        <button class="ctrl-btn play-btn" id="bbcPlay">▶</button>
+        <button class="ctrl-btn" id="bbcNext">⏭</button>
+        <button class="ctrl-btn" id="bbcSpeed"><span class="speed">0.9x</span></button>
+      </div>
+    `;
+    document.body.appendChild(player);
+
+    document.getElementById('bbcPlay').addEventListener('click', toggleBBCPlay);
+    document.getElementById('bbcPrev').addEventListener('click', () => { stopBBCSpeech(); playBBCSentence(Math.max(0, bbcSentenceIdx - 1)); });
+    document.getElementById('bbcNext').addEventListener('click', () => { stopBBCSpeech(); playBBCSentence(Math.min(bbcArticle.sentences.length - 1, bbcSentenceIdx + 1)); });
+    document.getElementById('bbcSpeed').addEventListener('click', cycleBBCSpeed);
+    // 进度条拖动
+    document.getElementById('bbcProgress').addEventListener('input', (e) => {
+      stopBBCSpeech();
+      const idx = parseInt(e.target.value) - 1;
+      if (bbcArticle && idx >= 0 && idx < bbcArticle.sentences.length) {
+        bbcSentenceIdx = idx;
+        playBBCSentence(idx);
+      }
+    });
+  }
+  player.classList.add('show');
+  updateBBCPlayBtn();
+  updateBBCTimes();
+  // 同步倍速按钮
+  const speedBtn = document.getElementById('bbcSpeed');
+  if (speedBtn) speedBtn.innerHTML = '<span class="speed">' + bbcRate + 'x</span>';
+}
+
+function hideBBCPlayer() {
+  const player = document.getElementById('bbcPlayer');
+  if (player) player.classList.remove('show');
+  stopBBCSpeech();
+}
+
+function updateBBCTitle() {
+  if (bbcArticle) {
+    document.getElementById('pageTitle').textContent = 'BBC随身英语';
+  }
+}
+
+function updateBBCPlayBtn() {
+  const btn = document.getElementById('bbcPlay');
+  if (!btn) return;
+  btn.innerHTML = bbcPlaying ? '⏸' : '▶';
+}
+
+function updateBBCTimes() {
+  if (!bbcArticle) return;
+  const total = bbcArticle.sentences.length;
+  const cur = document.getElementById('bbcCur');
+  const dur = document.getElementById('bbcDur');
+  const prog = document.getElementById('bbcProgress');
+  if (cur) cur.textContent = (bbcSentenceIdx + 1) + '/' + total;
+  if (dur) dur.textContent = total;
+  if (prog) {
+    prog.max = total;
+    prog.value = bbcSentenceIdx + 1;
+  }
+}
+
+function cycleBBCSpeed() {
+  const speeds = [0.6, 0.8, 1.0, 1.2];
+  const idx = speeds.indexOf(bbcRate);
+  bbcRate = speeds[(idx + 1) % speeds.length];
+  const btn = document.getElementById('bbcSpeed');
+  if (btn) btn.innerHTML = '<span class="speed">' + bbcRate + 'x</span>';
+}
+
+function toggleBBCPlay() {
+  if (!bbcArticle) return;
+  if (bbcPlaying) {
+    stopBBCSpeech();
+    bbcPlaying = false;
+  } else {
+    bbcPlaying = true;
+    playBBCSentence(bbcSentenceIdx);
+  }
+  updateBBCPlayBtn();
+}
+
+function playBBCSentence(idx) {
+  if (!bbcArticle) return;
+  bbcSentenceIdx = idx;
+  updateBBCTimes();
+  scrollToBBCSentence(idx);
+
+  // 高亮当前句
+  document.querySelectorAll('.bbc-sentence').forEach((el, i) => {
+    el.classList.toggle('playing', i === idx);
+  });
+
+  stopBBCSpeech();
+  const text = bbcArticle.sentences[idx].en;
+
+  if (!('speechSynthesis' in window)) {
+    // 不支持语音合成，跳过但继续播放流程
+    if (bbcPlaying && idx < bbcArticle.sentences.length - 1) {
+      setTimeout(() => playBBCSentence(idx + 1), 1500);
+    }
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-GB';
+  u.rate = bbcRate;
+  u.pitch = 1;
+  // 优先选英音引擎
+  if (enGBVoices.length > 0) {
+    u.voice = enGBVoices[0];
+  } else if (enVoices.length > 0) {
+    u.voice = enVoices[0];
+  }
+  startResumeHack(u);
+  bbcUtterance = u;
+
+  u.onend = () => {
+    clearInterval(resumeTimer);
+    // 播放完毕，取消当前句高亮
+    document.querySelectorAll('.bbc-sentence').forEach((el, i) => {
+      if (i === idx) el.classList.remove('playing');
+    });
+    if (bbcPlaying && idx < bbcArticle.sentences.length - 1) {
+      setTimeout(() => playBBCSentence(idx + 1), 800);
+    } else if (idx >= bbcArticle.sentences.length - 1) {
+      bbcPlaying = false;
+      updateBBCPlayBtn();
+    }
+  };
+
+  u.onerror = (e) => {
+    clearInterval(resumeTimer);
+    console.warn('BBC speech error:', e.error);
+    if (bbcPlaying && idx < bbcArticle.sentences.length - 1) {
+      setTimeout(() => playBBCSentence(idx + 1), 1000);
+    }
+  };
+
+  // 确保引擎已激活
+  window.speechSynthesis.speak(u);
+
+}
+
+function stopBBCSpeech() {
+  clearInterval(resumeTimer);
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+  bbcUtterance = null;
+}
+
+function scrollToBBCSentence(idx) {
+  const el = document.querySelector(`.bbc-sentence[data-idx="${idx}"]`);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  const today = localDateStr();
+  const saved = Store.get('todayQuiz', { date:'', done:0, score:0, questions:null, index:0, answers:[] });
+  if (saved.date === today && saved.questions && saved.index < saved.questions.length && !saved.finished) {
+    quizState = saved;
+  } else if (saved.date === today && saved.finished) {
+    quizState = saved;
+    renderQuizComplete();
+    return;
+  } else {
+    const questions = shuffle(QUIZ_BANK).slice(0, 5);
+    quizState = { date: today, done:0, score:0, questions, index:0, answers:[], finished:false };
+    Store.set('todayQuiz', quizState);
+  }
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const c = document.getElementById('quizContainer');
+  if (quizState.finished) { renderQuizComplete(); return; }
+  const q = quizState.questions[quizState.index];
+  const idx = quizState.index;
+  document.getElementById('quizCount').textContent = `第 ${idx+1}/5 题`;
+  document.getElementById('quizFill').style.width = `${((idx)/5)*100}%`;
+  document.getElementById('quizScore').textContent = `得分 ${quizState.score}`;
+
+  c.innerHTML = `
+    <div class="quiz-card">
+      <div class="quiz-question">${idx+1}. ${q.q}</div>
+      <div class="quiz-hint">💡 ${q.hint}</div>
+      <div class="quiz-options" id="optList">
+        ${q.options.map((o,i)=>`
+          <div class="quiz-option" data-i="${i}">
+            <div class="opt-label">${String.fromCharCode(65+i)}</div>
+            <div class="opt-text">
+              <span class="opt-en">${o}</span>
+              <span class="opt-zh">${q.tr ? q.tr[i] : ''}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="quiz-feedback" id="feedback"></div>
+      <div style="margin-top:14px;display:none" id="nextWrap">
+        <button class="btn btn-primary btn-block" id="nextBtn">${idx < 4 ? '下一题 ➡️' : '完成 🎉'}</button>
+      </div>
+    </div>
+  `;
+
+  document.querySelectorAll('.quiz-option').forEach(opt => {
+    opt.addEventListener('click', () => answerQuiz(parseInt(opt.dataset.i)));
+  });
+}
+
+function answerQuiz(choice) {
+  const q = quizState.questions[quizState.index];
+  const opts = document.querySelectorAll('.quiz-option');
+  const feedback = document.getElementById('feedback');
+  opts.forEach(o => {
+    o.style.pointerEvents = 'none';
+    o.classList.add('revealed');   // 显示每个选项的中文
+  });
+
+  if (choice === q.answer) {
+    opts[choice].classList.add('correct');
+    quizState.score += 20;
+    feedback.className = 'quiz-feedback show correct';
+    feedback.innerHTML = '✅ 回答正确！+20分';
+  } else {
+    opts[choice].classList.add('wrong');
+    opts[q.answer].classList.add('correct');
+    feedback.className = 'quiz-feedback show wrong';
+    feedback.innerHTML = `❌ 答案是 ${String.fromCharCode(65+q.answer)}。${q.exp}`;
+  }
+
+  quizState.done = quizState.index + 1;
+  quizState.answers.push({ choice, correct: choice === q.answer });
+  Store.set('todayQuiz', quizState);
+  markStudyToday();
+
+  document.getElementById('quizScore').textContent = `得分 ${quizState.score}`;
+  document.getElementById('nextWrap').style.display = 'block';
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    quizState.index++;
+    if (quizState.index >= 5) {
+      quizState.finished = true;
+      Store.set('todayQuiz', quizState);
+      renderQuizComplete();
+    } else {
+      Store.set('todayQuiz', quizState);
+      renderQuiz();
+    }
+  });
+}
+
+function renderQuizComplete() {
+  document.getElementById('quizCount').textContent = '已完成';
+  document.getElementById('quizFill').style.width = '100%';
+  document.getElementById('quizScore').textContent = `得分 ${quizState.score}`;
+  const score = quizState.score;
+  let emoji = '🎉', title = '挑战完成！', msg = '';
+  if (score >= 80) { emoji='🏆'; title='太棒了！'; msg='你已经掌握了这些知识点'; }
+  else if (score >= 60) { emoji='👍'; title='不错！'; msg='继续加油，可以做得更好'; }
+  else { emoji='💪'; title='别灰心！'; msg='多练习就会进步'; }
+
+  document.getElementById('quizContainer').innerHTML = `
+    <div class="quiz-card quiz-complete">
+      <div class="emoji">${emoji}</div>
+      <div class="title">${title}</div>
+      <div class="score">最终得分：${score} / 100</div>
+      <div style="color:var(--text-light);font-size:13px;margin-bottom:8px">${msg}</div>
+      <button class="btn btn-ghost" onclick="resetQuiz()">重新挑战</button>
+    </div>
+  `;
+}
+
+function resetQuiz() {
+  const today = localDateStr();
+  quizState = { date: today, done:0, score:0, questions: shuffle(QUIZ_BANK).slice(0,5), index:0, answers:[], finished:false };
+  Store.set('todayQuiz', quizState);
+  renderQuiz();
+}
+
+/* ==================== 每日口语练习 ==================== */
+const ORAL_SCENES = [
+  {
+    title: '🏨 帮客户订酒店',
+    desc: '客户来访，带他们入住酒店时的常用表达。',
+    chat: [
+      { role: 'you', en: 'Good morning, Mr. Smith! Have you settled in well?', zh: '早上好，史密斯先生！您安顿好了吗？' },
+      { role: 'client', en: 'Good morning! Yes, the room is lovely. Thank you for arranging it.', zh: '早上好！是的，房间很棒。谢谢你安排。' },
+      { role: 'you', en: "I'm glad you like it. I chose a room with a city view — the night scenery here is quite beautiful.", zh: '很高兴您喜欢。我选了一间城景房，这里的夜景很美。' },
+      { role: 'client', en: 'Oh, I noticed! The skyline at night is stunning. Great choice!', zh: '哦，我注意到了！夜晚的摩天大楼太美了。选得好！' },
+      { role: 'you', en: 'If you need anything — laundry, gym access, or restaurant recommendations — just let me know.', zh: '如果您需要什么——洗衣、健身房或餐厅推荐——随时告诉我。' }
+    ],
+    keys: [
+      { phrase: 'settle in', meaning: '安顿下来' },
+      { phrase: 'city view', meaning: '城市景观' },
+      { phrase: 'night scenery', meaning: '夜景' },
+      { phrase: 'just let me know', meaning: '随时告诉我' }
+    ],
+    tip: '中东客户来访时，注意尊重宗教习惯：不要在祷告时间安排会议，可提供清真餐饮建议。'
+  },
+  {
+    title: '🚗 工厂参观接待',
+    desc: '带海外客户参观汽车零部件工厂时的专业介绍。',
+    chat: [
+      { role: 'you', en: 'Welcome to our factory, Mr. Anderson. Let me show you around our production lines.', zh: '欢迎来到我们工厂，安德森先生。我带您参观一下生产线。' },
+      { role: 'client', en: 'Thank you. I would like to see your quality control process first.', zh: '谢谢。我想先看看你们的质量控制流程。' },
+      { role: 'you', en: 'Of course. This is our inspection lab. Every batch is tested before shipment.', zh: '当然。这是我们的检测实验室。每批货在发货前都会检测。' },
+      { role: 'client', en: 'What is the defect rate for your brake pads?', zh: '你们刹车片的缺陷率是多少？' },
+      { role: 'you', en: 'Our defect rate is below 0.3%, well under the industry standard of 1%.', zh: '我们的缺陷率低于0.3%，远低于行业标准1%。' }
+    ],
+    keys: [
+      { phrase: 'show around', meaning: '带领参观' },
+      { phrase: 'quality control', meaning: '质量控制' },
+      { phrase: 'inspection lab', meaning: '检测实验室' },
+      { phrase: 'defect rate', meaning: '缺陷率' }
+    ],
+    tip: '带客户参观工厂时，准备好安全帽、安全鞋，提前告知拍摄规定，体现专业形象。'
+  },
+  {
+    title: '💼 商务谈判开场',
+    desc: '正式谈判前的寒暄与议程确认。',
+    chat: [
+      { role: 'you', en: 'Thank you for making time to meet with us today, Ms. Lee.', zh: '感谢您今天抽空与我们见面，李女士。' },
+      { role: 'client', en: 'My pleasure. I hope we can reach a win-win agreement.', zh: '荣幸之至。希望我们达成双赢协议。' },
+      { role: 'you', en: 'So do I. Before we start, shall we go through the agenda for today?', zh: '我也是。开始前，我们先过一下今天的议程好吗？' },
+      { role: 'client', en: 'Sure. I would like to focus on pricing and delivery terms.', zh: '好的。我想重点讨论价格和交货条款。' },
+      { role: 'you', en: 'Noted. We have prepared detailed quotations for both. Let us begin.', zh: '明白。我们已准备好两份详细报价。我们开始吧。' }
+    ],
+    keys: [
+      { phrase: 'make time', meaning: '抽出时间' },
+      { phrase: 'win-win agreement', meaning: '双赢协议' },
+      { phrase: 'go through the agenda', meaning: '过一遍议程' },
+      { phrase: 'delivery terms', meaning: '交货条款' }
+    ],
+    tip: '欧美客户注重效率，开场寒暄控制在1-2分钟；日韩客户更注重礼节，可适当延长问候。'
+  },
+  {
+    title: '🍽️ 商务晚宴接待',
+    desc: '商务晚餐时与客户交流的轻松话题。',
+    chat: [
+      { role: 'you', en: 'Please have a seat, Mr. Brown. I have booked a private room for us.', zh: '请坐，布朗先生。我为我们订了一个包间。' },
+      { role: 'client', en: 'That is very thoughtful. What local dishes do you recommend?', zh: '太周到了。你推荐什么本地菜？' },
+      { role: 'you', en: 'I would recommend the steamed fish and the kung pao chicken. They are quite popular here.', zh: '我推荐清蒸鱼和宫保鸡丁。这里很受欢迎。' },
+      { role: 'client', en: 'They sound delicious. I would love to try them.', zh: '听起来很美味。我很想尝尝。' },
+      { role: 'you', en: 'Great. Let us also make a toast to our successful cooperation.', zh: '太好了。我们也为合作成功干一杯。' }
+    ],
+    keys: [
+      { phrase: 'private room', meaning: '包间' },
+      { phrase: 'local dishes', meaning: '本地菜' },
+      { phrase: 'highly recommend', meaning: '强烈推荐' },
+      { phrase: 'make a toast', meaning: '敬酒' }
+    ],
+    tip: '印度客户中很多是素食者或不吃牛肉；中东客户不吃猪肉、不喝酒。点餐前最好确认饮食习惯。'
+  },
+  {
+    title: '📞 电话跟进订单',
+    desc: '通过电话或视频会议跟进订单进度。',
+    chat: [
+      { role: 'you', en: 'Hi, John. I am calling to update you on your order PO-2026-045.', zh: '你好，约翰。我打电话来更新您订单 PO-2026-045 的进度。' },
+      { role: 'client', en: 'Good timing. Can you confirm the delivery date?', zh: '正好。你能确认一下交货日期吗？' },
+      { role: 'you', en: 'Yes, the production is 80% complete. We can ship by the end of next week.', zh: '可以，生产已完成80%。我们下周结束前可以发货。' },
+      { role: 'client', en: 'Will it arrive at Hamburg port before the 15th?', zh: '能在15号之前到达汉堡港吗？' },
+      { role: 'you', en: 'Based on the shipping schedule, it should arrive on the 12th. I will send you the tracking number once it departs.', zh: '根据船期，预计12号到。发货后我会把追踪号发给您。' }
+    ],
+    keys: [
+      { phrase: 'update on', meaning: '更新……进度' },
+      { phrase: 'confirm the delivery date', meaning: '确认交货日期' },
+      { phrase: 'shipping schedule', meaning: '船期' },
+      { phrase: 'tracking number', meaning: '追踪号' }
+    ],
+    tip: '德国客户注重准时，宁可提前告知可能的延误，也不要临时变卦；确认后务必邮件书面留痕。'
+  },
+  {
+    title: '✈️ 机场接送客户',
+    desc: '去机场接机或送机时的实用对话。',
+    chat: [
+      { role: 'you', en: 'Welcome to Shanghai, Mr. Garcia! Did you have a pleasant flight?', zh: '欢迎来到上海，加西亚先生！旅途愉快吗？' },
+      { role: 'client', en: 'Yes, thank you. It was a bit long, but quite smooth.', zh: '是的，谢谢。有点长，但还算顺利。' },
+      { role: 'you', en: 'Glad to hear that. The car is waiting outside. It will take about 45 minutes to the hotel.', zh: '很高兴听到这个消息。车在外面等着。到酒店大约45分钟。' },
+      { role: 'client', en: 'Perfect. Do we have any meetings scheduled for this afternoon?', zh: '很好。今天下午有安排会议吗？' },
+      { role: 'you', en: 'No, we have left the afternoon free so you can rest and recover from jet lag.', zh: '没有，我们下午留空了，方便您休息调整时差。' }
+    ],
+    keys: [
+      { phrase: 'pleasant flight', meaning: '愉快的飞行' },
+      { phrase: 'smooth trip', meaning: '顺利的旅途' },
+      { phrase: 'recover from jet lag', meaning: '调整时差' },
+      { phrase: 'scheduled meeting', meaning: '安排的会议' }
+    ],
+    tip: '拉美、中东客户时间观念相对灵活，但欧美客户非常守时。接机最好提前15分钟到达。'
+  },
+  {
+    title: '📧 邮件确认样品',
+    desc: '向客户确认样品已寄出及相关细节。',
+    chat: [
+      { role: 'you', en: 'Hi, Sarah. I am writing to let you know the samples were sent out this morning.', zh: '你好，萨拉。我写信是想告诉您样品今天上午已寄出。' },
+      { role: 'client', en: 'Great. How many days will the express delivery take?', zh: '太好了。快递要几天？' },
+      { role: 'you', en: 'By DHL, it usually takes 3 to 5 business days. You will receive the tracking number shortly.', zh: 'DHL 通常需要3到5个工作日。您很快会收到追踪号。' },
+      { role: 'client', en: 'Could you also send me the test report of the samples?', zh: '您能把样品的测试报告也发给我吗？' },
+      { role: 'you', en: 'Absolutely. I have attached the report in this email. Please let me know if you need anything else.', zh: '当然。我已把报告附在这封邮件里。还需要什么请告诉我。' }
+    ],
+    keys: [
+      { phrase: 'sent out', meaning: '寄出' },
+      { phrase: 'business days', meaning: '工作日' },
+      { phrase: 'tracking number', meaning: '追踪号' },
+      { phrase: 'test report', meaning: '测试报告' }
+    ],
+    tip: '寄样品前拍照留档，注明数量、型号、日期；客户收到后主动跟进反馈，提高转化率。'
+  }
+];
+
+function getTodayOralIndex() {
+  const start = new Date('2026-01-01').getTime();
+  const now = new Date().getTime();
+  const days = Math.floor((now - start) / 86400000);
+  return days % ORAL_SCENES.length;
+}
+
+function renderOral() {
+  const idx = getTodayOralIndex();
+  const scene = ORAL_SCENES[idx];
+  const now = new Date();
+  const days = ['日','一','二','三','四','五','六'];
+  document.getElementById('oralDate').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 星期${days[now.getDay()]}`;
+
+  const container = document.getElementById('oralContent');
+  container.innerHTML = `
+    <div class="oral-scene-card">
+      <div class="scene-title">${scene.title}</div>
+      <div class="scene-desc">${scene.desc}</div>
+    </div>
+    <div class="oral-chat">
+      ${scene.chat.map((m, i) => `
+        <div class="oral-msg ${m.role}">
+          <div class="oral-avatar">${m.role === 'you' ? '🙂' : '👔'}</div>
+          <div class="oral-bubble" data-idx="${i}">
+            <div class="en">${m.en}</div>
+            <div class="zh">${m.zh}</div>
+            <div class="play-icon">▶</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="oral-key">
+      <div class="key-title">💡 关键短语</div>
+      ${scene.keys.map(k => `<div class="key-item">• <strong>${k.phrase}</strong>：${k.meaning}</div>`).join('')}
+    </div>
+    <div class="oral-tip">
+      <div class="tip-title">🌍 跨文化小贴士</div>
+      <div class="tip-content">${scene.tip}</div>
+    </div>
+  `;
+
+  container.querySelectorAll('.oral-bubble').forEach(b => {
+    b.addEventListener('click', () => {
+      const i = parseInt(b.dataset.idx);
+      const text = scene.chat[i].en;
+      speak(text, 1.0, 'en-US');
+      b.style.transform = 'scale(0.97)';
+      setTimeout(() => b.style.transform = '', 120);
+      // 累计点击 3 次以上算作一次学习
+      const cnt = (Store.get('oralClicks_' + localDateStr(), 0) || 0) + 1;
+      Store.set('oralClicks_' + localDateStr(), cnt);
+      if (cnt >= 3) markStudyToday();
+    });
+  });
+}
+
+/* ==================== 跟读练习 ==================== */
+function startSpeak() {
+  const today = localDateStr();
+  const saved = Store.get('todaySpeak', { date:'', index:0, finished:false });
+  if (saved.date === today && saved.finished) {
+    speakState = saved;
+    renderSpeakComplete();
+    return;
+  }
+  if (saved.date === today && saved.index > 0) {
+    speakState = saved;
+    speakState.sentences = saved.sentences;
+  } else {
+    const sentences = shuffle(SPEAK_BANK).slice(0, 5);
+    speakState = { date: today, index:0, sentences, finished:false };
+    Store.set('todaySpeak', speakState);
+  }
+  renderSpeak();
+}
+
+function renderSpeak() {
+  const c = document.getElementById('speakContainer');
+  if (speakState.finished) { renderSpeakComplete(); return; }
+  const idx = speakState.index;
+  const s = speakState.sentences[idx];
+  document.getElementById('speakCount').textContent = `第 ${idx+1}/5 句`;
+  document.getElementById('speakFill').style.width = `${((idx)/5)*100}%`;
+
+  c.innerHTML = `
+    <div class="speak-card">
+      <div class="speak-en">${s.en}</div>
+      <div class="speak-zh">${s.zh}</div>
+      <div class="speak-actions">
+        <button class="speak-btn listen" id="listenBtn">
+          <span class="ico">🔊</span><span>听发音</span>
+        </button>
+        <button class="speak-btn record" id="recordBtn">
+          <span class="ico">🎤</span><span>跟读</span>
+        </button>
+      </div>
+      <div class="recognized-text" id="recognized"></div>
+      <div class="speak-result" id="speakResult"></div>
+      <div style="margin-top:14px;display:none" id="speakNextWrap">
+        <button class="btn btn-primary btn-block" id="speakNextBtn">${idx < 4 ? '下一句 ➡️' : '完成 🎉'}</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('listenBtn').addEventListener('click', () => {
+    speak(s.en);
+  });
+  document.getElementById('recordBtn').addEventListener('click', () => startRecord(s));
+  document.getElementById('speakNextBtn').addEventListener('click', () => {
+    speakState.index++;
+    if (speakState.index >= 5) {
+      speakState.finished = true;
+      Store.set('todaySpeak', speakState);
+      markStudyToday();
+      renderSpeakComplete();
+    } else {
+      Store.set('todaySpeak', speakState);
+      markStudyToday();
+      renderSpeak();
+    }
+  });
+
+  // 自动播放一次
+  setTimeout(() => speak(s.en), 300);
+}
+
+/* ==================== 语音播放引擎 ==================== */
+// 预热：确保语音引擎可用
+let voicesReady = false;
+let enVoices = [];
+let enGBVoices = [];
+
+function warmUpVoices() {
+  if (!('speechSynthesis' in window)) return;
+  const load = () => {
+    const all = window.speechSynthesis.getVoices();
+    if (all.length === 0) return;
+    const preferredNames = ['Samantha','Google US English','Microsoft Zira','Microsoft David','Karen','Daniel','Google UK English Male','Google UK English Female'];
+    const rank = v => { const i = preferredNames.indexOf(v.name); return i >= 0 ? i : 999; };
+    enVoices = all.filter(v => v.lang.startsWith('en')).sort((a,b) => rank(a) - rank(b));
+    enGBVoices = all.filter(v => v.lang.startsWith('en-GB')).sort((a,b) => rank(a) - rank(b));
+    voicesReady = true;
+  };
+  load();
+  if (!voicesReady) {
+    window.speechSynthesis.addEventListener('voiceschanged', load);
+    setTimeout(load, 3000);
+  }
+}
+warmUpVoices();
+
+// Chrome bug：长文本播放会中途暂停，需要定时 resume
+let resumeTimer = null;
+function startResumeHack(u) {
+  clearInterval(resumeTimer);
+  resumeTimer = setInterval(() => {
+    if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) return;
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
+  }, 5000);
+  u.addEventListener('end', () => clearInterval(resumeTimer));
+  u.addEventListener('error', () => clearInterval(resumeTimer));
+}
+
+function speak(text, rate, lang) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang || 'en-US';
+  u.rate = rate || 0.9;
+  u.pitch = 1;
+  // 优先选英音（BBC风格）或美音
+  const voicePool = lang === 'en-GB' ? enGBVoices : enVoices;
+  if (voicePool.length > 0) {
+    u.voice = voicePool[0];
+  }
+  startResumeHack(u);
+  window.speechSynthesis.speak(u);
+}
+
+let recognition = null;
+function startRecord(s) {
+  const recBtn = document.getElementById('recordBtn');
+  const result = document.getElementById('speakResult');
+  const recognized = document.getElementById('recognized');
+  const nextWrap = document.getElementById('speakNextWrap');
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    fallbackManualMode(s, '您的浏览器不支持语音识别。');
+    return;
+  }
+
+  // 停止上一次的
+  if (recognition && recognition.isRecording) {
+    try { recognition.stop(); } catch(e){}
+    return;
+  }
+
+  // 重置状态
+  recognized.className = 'recognized-text show';
+  recognized.innerHTML = '🎙 请朗读上方英文句子...';
+  result.className = 'speak-result';
+  result.textContent = '';
+
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.interimResults = true;   // 中间结果让用户知道有声音
+  recognition.maxAlternatives = 1;
+  recognition.continuous = false;
+
+  recBtn.classList.add('recording');
+  recBtn.querySelector('.ico').textContent = '⏹';
+  recBtn.querySelector('span:last-child').textContent = '停止';
+  recognition.isRecording = true;
+
+  let finalTranscript = '';
+  let hasResult = false;
+
+  recognition.onresult = (e) => {
+    hasResult = true;
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) finalTranscript += t;
+      else interim += t;
+    }
+    if (interim) {
+      recognized.innerHTML = '<strong>识别中：</strong>' + interim;
+    }
+  };
+
+  recognition.onerror = (e) => {
+    console.error('Speech error', e.error);
+    recognized.className = 'recognized-text show';
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+      recognized.innerHTML = '🔒 麦克风权限被拒绝。<br>请检查浏览器设置 → 网站设置 → 麦克风 → 允许本站。';
+      fallbackManualMode(s, '麦克风未授权');
+    } else if (e.error === 'no-speech') {
+      recognized.innerHTML = '🎤 没有检测到声音，请靠近麦克风大声朗读，或点击“听发音”多听几遍。';
+      fallbackManualMode(s, '未检测到声音');
+    } else if (e.error === 'audio-capture') {
+      recognized.innerHTML = '🔇 找不到麦克风设备，请检查手机麦克风是否正常。';
+      fallbackManualMode(s, '麦克风不可用');
+    } else if (e.error === 'network') {
+      recognized.innerHTML = '🌐 语音识别服务连接失败，可能是网络问题。';
+      fallbackManualMode(s, '网络连接失败');
+    } else {
+      recognized.innerHTML = '⚠️ 识别出错（' + e.error + '），请重试或点击下方按钮继续。';
+      fallbackManualMode(s, '识别出错：' + e.error);
+    }
+  };
+
+  recognition.onend = () => {
+    recBtn.classList.remove('recording');
+    recBtn.querySelector('.ico').textContent = '🎤';
+    recBtn.querySelector('span:last-child').textContent = '跟读';
+    recognition.isRecording = false;
+
+    if (!hasResult) return;
+    const transcript = finalTranscript.trim().toLowerCase();
+    if (!transcript) {
+      recognized.innerHTML = '🎤 没有听清，请再试一次。';
+      return;
+    }
+
+    recognized.innerHTML = '<strong>你说：</strong>' + transcript;
+    const target = s.en.toLowerCase().replace(/[^a-z0-9\s]/g,'');
+    const cleanTrans = transcript.replace(/[^a-z0-9\s]/g,'');
+    const similarity = calcSimilarity(target, cleanTrans);
+    result.className = 'speak-result show';
+    if (similarity > 0.7) {
+      result.className += ' good';
+      result.textContent = '🎉 很棒！相似度 ' + Math.round(similarity*100) + '%';
+    } else {
+      result.className += ' try';
+      result.textContent = '💪 相似度 ' + Math.round(similarity*100) + '%，再试一次';
+    }
+    nextWrap.style.display = 'block';
+  };
+
+  // 安全启动
+  try {
+    recognition.start();
+  } catch(err) {
+    console.error('start failed', err);
+    recognized.innerHTML = '🎤 启动语音识别失败，请重试。';
+    fallbackManualMode(s, '启动失败');
+    recBtn.classList.remove('recording');
+  }
+}
+
+function fallbackManualMode(s, reason) {
+  const result = document.getElementById('speakResult');
+  const nextWrap = document.getElementById('speakNextWrap');
+  result.className = 'speak-result show try';
+  result.textContent = reason ? reason + '，已为你开启手动模式' : '已为你开启手动模式';
+  nextWrap.style.display = 'block';
+}
+
+function calcSimilarity(a, b) {
+  if (!a || !b) return 0;
+  const wordsA = a.split(/\s+/);
+  const wordsB = b.split(/\s+/);
+  let match = 0;
+  wordsA.forEach(w => { if (wordsB.includes(w)) match++; });
+  return match / Math.max(wordsA.length, wordsB.length);
+}
+
+function renderSpeakComplete() {
+  document.getElementById('speakCount').textContent = '已完成';
+  document.getElementById('speakFill').style.width = '100%';
+  markStudyToday();
+  document.getElementById('speakContainer').innerHTML = `
+    <div class="speak-card quiz-complete">
+      <div class="emoji">🗣️</div>
+      <div class="title">跟读练习完成！</div>
+      <div class="score">你已完成今日5句跟读</div>
+      <button class="btn btn-ghost" onclick="resetSpeak()">再次练习</button>
+    </div>
+  `;
+}
+
+function resetSpeak() {
+  const today = localDateStr();
+  speakState = { date: today, index:0, sentences: shuffle(SPEAK_BANK).slice(0,5), finished:false };
+  Store.set('todaySpeak', speakState);
+  renderSpeak();
+}
+
+/* ==================== 新闻 ==================== */
+let newsCache = { cat:null, data:null, time:0 };
+let currentNewsCat = 'auto';
+
+document.querySelectorAll('.news-tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.news-tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    currentNewsCat = t.dataset.cat;
+    loadNews();
+  });
+});
+
+document.getElementById('refreshNews').addEventListener('click', () => {
+  newsCache = { cat:null, data:null, time:0 };
+  loadNews();
+});
+
+async function loadNews() {
+  const list = document.getElementById('newsList');
+  const now = Date.now();
+  if (newsCache.cat === currentNewsCat && newsCache.data && (now - newsCache.time) < 600000) {
+    renderNews(newsCache.data);
+    return;
+  }
+  list.innerHTML = '<div class="loading"><div class="spinner"></div>正在加载新闻...</div>';
+
+  try {
+    const feeds = getNewsFeeds(currentNewsCat);
+    const allNews = [];
+
+    // 用 rss2json 公共服务转换 RSS
+    const promises = feeds.map(f =>
+      fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(f.url)}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === 'ok' && data.items) {
+            data.items.slice(0, 8).forEach(item => {
+              allNews.push({
+                title: item.title,
+                link: item.link,
+                desc: stripHtml(item.description || item.content || '').slice(0, 120),
+                pubDate: item.pubDate,
+                source: f.name,
+                tag: f.tag
+              });
+            });
+          }
+        })
+        .catch(() => {})
+    );
+
+    await Promise.all(promises);
+    // 去重
+    const seen = new Set();
+    const unique = allNews.filter(n => {
+      if (seen.has(n.title)) return false;
+      seen.add(n.title);
+      return true;
+    });
+
+    if (unique.length === 0) {
+      const fallback = getFallbackNews(currentNewsCat);
+      renderNews(fallback);
+      // 仍标注提示
+      const tip = document.createElement('div');
+      tip.style.cssText = 'text-align:center;padding:10px;font-size:12px;color:var(--text-light)';
+      tip.innerHTML = '📡 实时新闻加载中，先为您展示行业精选资讯<br>点击右上角刷新重试';
+      list.insertBefore(tip, list.firstChild);
+      return;
+    }
+
+    unique.sort((a,b) => new Date(b.pubDate) - new Date(a.pubDate));
+    newsCache = { cat: currentNewsCat, data: unique, time: now };
+    renderNews(unique);
+  } catch(e) {
+    const fallback = getFallbackNews(currentNewsCat);
+    renderNews(fallback);
+  }
+}
+
+// 备用资讯（当实时RSS无法加载时显示）
+function getFallbackNews(cat) {
+  const data = {
+    auto: [
+      { title:'全球电动汽车销量持续增长，中国品牌领跑', desc:'2024年全球新能源车销量突破千万辆，中国车企市场份额持续扩大，欧洲市场成为重要战场。', source:'行业观察', tag:'汽车', link:'https://www.autonews.com/', pubDate:new Date(Date.now()-3600000).toISOString() },
+      { title:'芯片供应趋稳，汽车零部件厂商产能恢复', desc:'随着半导体供应链恢复正常，Tier1供应商出货量回升，但价格压力仍然存在。', source:'行业观察', tag:'汽车', link:'https://www.autonews.com/', pubDate:new Date(Date.now()-7200000).toISOString() },
+      { title:'IATF 16949:2026 修订版即将发布', desc:'汽车行业质量管理体系标准迎来更新，新增软件质量管理要求，零部件企业需提前准备。', source:'质量前沿', tag:'汽车', link:'https://www.iatfglobaloversight.org/', pubDate:new Date(Date.now()-86400000).toISOString() },
+      { title:'特斯拉、比亚迪登顶全球电动车销量榜', desc:'两家车企合计占据全球电动车市场近40%份额，传统车企加速电动化转型。', source:'行业观察', tag:'汽车', link:'https://www.caranddriver.com/', pubDate:new Date(Date.now()-90000000).toISOString() },
+      { title:'轻量化材料应用：铝合金在车身中占比提升', desc:'为满足节能减排要求，铝合金在白车身中应用比例持续上升，给零部件加工带来新机遇。', source:'技术前沿', tag:'汽车', link:'https://www.autonews.com/', pubDate:new Date(Date.now()-172800000).toISOString() },
+    ],
+    world: [
+      { title:'关注全球贸易格局变化对出口业务的影响', desc:'各国贸易政策调整持续，建议海外销售关注关税变化与本地化策略。', source:'时事参考', tag:'国际', link:'https://www.bbc.com/news/world', pubDate:new Date(Date.now()-3600000).toISOString() },
+      { title:'人民币汇率波动，出口企业需做好风险管理', desc:'近期汇率走势对出口企业利润产生影响，建议关注远期结售汇工具。', source:'财经参考', tag:'国际', link:'https://www.reuters.com/', pubDate:new Date(Date.now()-7200000).toISOString() },
+      { title:'中欧班列运量再创新高，助力汽车零部件出口', desc:'中欧班列为对欧出口提供了高效物流通道，运输时效与成本优势明显。', source:'物流参考', tag:'国际', link:'https://www.bbc.com/news/world', pubDate:new Date(Date.now()-86400000).toISOString() },
+    ],
+    tech: [
+      { title:'自动驾驶L3级法规逐步放开', desc:'多国加快自动驾驶立法，L3级量产加速，相关传感器与软件需求增长。', source:'科技前沿', tag:'科技', link:'https://www.theverge.com/', pubDate:new Date(Date.now()-3600000).toISOString() },
+      { title:'车载芯片算力竞赛：8nm成新一代主流', desc:'智能座舱与自动驾驶芯片制程迭代加速，国产替代进程加快。', source:'科技前沿', tag:'科技', link:'https://techcrunch.com/', pubDate:new Date(Date.now()-86400000).toISOString() },
+      { title:'软件定义汽车成为行业共识', desc:'OTA升级、功能订阅模式兴起，零部件供应商需向软件+硬件综合方案转型。', source:'科技前沿', tag:'科技', link:'https://www.theverge.com/', pubDate:new Date(Date.now()-172800000).toISOString() },
+    ],
+    business: [
+      { title:'全球供应链重塑，近岸外包趋势加强', desc:'欧美企业加速供应链多元化，墨西哥、东南亚等地成为热门产能转移目的地。', source:'财经参考', tag:'财经', link:'https://www.bbc.com/news/business', pubDate:new Date(Date.now()-3600000).toISOString() },
+      { title:'原材料价格波动，零部件企业成本管控承压', desc:'钢、铝、铜等大宗商品价格波动加大，零部件企业需加强供应链成本管理。', source:'财经参考', tag:'财经', link:'https://www.reuters.com/', pubDate:new Date(Date.now()-86400000).toISOString() },
+      { title:'跨境人民币结算规模扩大，降低汇兑成本', desc:'人民币国际化持续推进，跨境结算为出口企业降低汇率风险与交易成本。', source:'财经参考', tag:'财经', link:'https://www.bbc.com/news/business', pubDate:new Date(Date.now()-172800000).toISOString() },
+    ]
+  };
+  return data[cat] || data.auto;
+}
+
+function getNewsFeeds(cat) {
+  const feeds = {
+    auto: [
+      { url:'https://www.autonews.com/rss/automotive-news.xml', name:'Automotive News', tag:'汽车' },
+      { url:'https://feeds.feedburner.com/autonews/BreakingNews', name:'AutoNews Breaking', tag:'汽车' },
+      { url:'https://www.caranddriver.com/rss/all.xml', name:'Car and Driver', tag:'汽车' },
+      { url:'https://rss.cnn.com/rss/money_autos.rss', name:'CNN Autos', tag:'汽车' },
+    ],
+    world: [
+      { url:'https://rss.cnn.com/rss/edition_world.rss', name:'CNN World', tag:'国际' },
+      { url:'https://feeds.bbci.co.uk/news/world/rss.xml', name:'BBC World', tag:'国际' },
+      { url:'https://www.aljazeera.com/xml/rss/all.xml', name:'Al Jazeera', tag:'国际' },
+    ],
+    tech: [
+      { url:'https://feeds.feedburner.com/TechCrunch/', name:'TechCrunch', tag:'科技' },
+      { url:'https://www.theverge.com/rss/index.xml', name:'The Verge', tag:'科技' },
+    ],
+    business: [
+      { url:'https://feeds.bbci.co.uk/news/business/rss.xml', name:'BBC Business', tag:'财经' },
+      { url:'https://rss.cnn.com/rss/money_news_international.rss', name:'CNN Money', tag:'财经' },
+      { url:'https://www.reutersagency.com/feed/?best-topics=business-finance&post_type=best', name:'Reuters', tag:'财经' },
+    ]
+  };
+  return feeds[cat] || feeds.auto;
+}
+
+function stripHtml(html) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText || '';
+}
+
+function renderNews(items) {
+  const list = document.getElementById('newsList');
+  list.innerHTML = items.map(n => `
+    <a class="news-item" href="${n.link}" target="_blank" rel="noopener">
+      <div class="source">
+        <span class="tag">${n.tag}</span>
+        <span>${n.source}</span>
+      </div>
+      <h3>${n.title}</h3>
+      <div class="desc">${n.desc}</div>
+      <div class="time">${formatTime(n.pubDate)}</div>
+    </a>
+  `).join('');
+}
+
+function formatTime(d) {
+  if (!d) return '';
+  const date = new Date(d);
+  const diff = Date.now() - date.getTime();
+  if (diff < 3600000) return Math.floor(diff/60000) + '分钟前';
+  if (diff < 86400000) return Math.floor(diff/3600000) + '小时前';
+  return `${date.getMonth()+1}月${date.getDate()}日`;
+}
+
+/* ==================== 备忘录 ==================== */
+let memos = Store.get('memos', []);
+
+function renderMemos() {
+  const list = document.getElementById('memoList');
+  if (memos.length === 0) {
+    list.innerHTML = '<div class="memo-empty"><div class="emoji">📝</div><div>还没有备忘录<br>添加第一条吧</div></div>';
+    return;
+  }
+  // 按时间倒序，未完成在前
+  const sorted = [...memos].sort((a,b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return b.createdAt - a.createdAt;
+  });
+  list.innerHTML = sorted.map(m => `
+    <div class="memo-item ${m.done?'done':''}" data-id="${m.id}">
+      <div class="checkbox ${m.done?'checked':''}" onclick="toggleMemo(${m.id})">
+        <span class="check">✓</span>
+      </div>
+      <div style="flex:1">
+        <div class="content">${escapeHtml(m.text)}</div>
+        <div class="time">${formatMemoTime(m.createdAt)}</div>
+      </div>
+      <button class="del-btn" onclick="deleteMemo(${m.id})">✕</button>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function formatMemoTime(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  const diff = now - d;
+  if (diff < 60000) return '刚刚';
+  if (diff < 3600000) return Math.floor(diff/60000)+'分钟前';
+  if (d.toDateString() === now.toDateString()) return `今天 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  return `${d.getMonth()+1}月${d.getDate()}日`;
+}
+
+function addMemo() {
+  const input = document.getElementById('memoInput');
+  const text = input.value.trim();
+  if (!text) return;
+  memos.push({ id: Date.now(), text, done:false, createdAt: Date.now() });
+  Store.set('memos', memos);
+  input.value = '';
+  renderMemos();
+}
+
+document.getElementById('addMemo').addEventListener('click', addMemo);
+document.getElementById('memoInput').addEventListener('keydown', e => { if (e.key === 'Enter') addMemo(); });
+
+function toggleMemo(id) {
+  const m = memos.find(x => x.id === id);
+  if (m) { m.done = !m.done; Store.set('memos', memos); renderMemos(); }
+}
+
+function deleteMemo(id) {
+  memos = memos.filter(x => x.id !== id);
+  Store.set('memos', memos);
+  renderMemos();
+}
+
+/* ==================== PWA 注册 ==================== */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      // 检查更新
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        if (!nw) return;
+        nw.addEventListener('statechange', () => {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+            // 新版本已下载，提示用户
+            showUpdateToast('发现新版本，已自动加载');
+          }
+        });
+      });
+      // 每隔 30 分钟检查一次更新
+      setInterval(() => reg.update(), 1800000);
+    }).catch(err => console.warn('SW注册失败', err));
+  });
+}
+
+let updateToastTimer = null;
+function showUpdateToast(msg) {
+  let t = document.getElementById('updateToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'updateToast';
+    t.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:10px 18px;border-radius:24px;font-size:13px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.2);opacity:0;transition:opacity .3s;max-width:90vw;text-align:center';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(updateToastTimer);
+  updateToastTimer = setTimeout(() => { t.style.opacity = '0'; }, 3000);
+}
+
+// 手动强制刷新缓存（用于"检查更新"按钮）
+function forceRefresh() {
+  showUpdateToast('正在检查更新...');
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    const controlled = navigator.serviceWorker.controller;
+    // 发消息让 SW 清缓存
+    controlled.postMessage('force-update');
+    // 等待回信后刷新页面
+    navigator.serviceWorker.addEventListener('message', function once(msg) {
+      if (msg.data === 'update-done') {
+        navigator.serviceWorker.removeEventListener('message', once);
+        showUpdateToast('已是最新版本 ✅');
+        setTimeout(() => location.reload(), 600);
+      }
+    });
+    // 3 秒兜底刷新
+    setTimeout(() => location.reload(), 3500);
+  } else {
+    // 没有 SW，直接刷新
+    location.reload();
+  }
+}
+
+/* ==================== 初始化 ==================== */
+renderHome();
+</script>
+</body>
+</html>
