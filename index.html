@@ -958,6 +958,9 @@ html, body {
 
       <!-- 首页 -->
       <div class="page active" id="page-home">
+        <div id="pwaHint" style="display:none;background:#fff3cd;color:#856404;padding:10px 14px;font-size:12px;line-height:1.6;border-radius:8px;margin-bottom:12px">
+          ⚠️ 检测到你用的是 iOS 桌面 PWA，旧版代码被缓存。请<b>长按桌面图标 → 删除</b>，然后 Safari 重新打开链接，再加到桌面。
+        </div>
         <div class="welcome-card">
           <div class="greeting" id="greeting">你好，肸肸！</div>
           <div class="date" id="todayDate"></div>
@@ -996,6 +999,7 @@ html, body {
             <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
               <button class="btn btn-ghost btn-sm" onclick="addStudyDay()">+ 补录今天</button>
               <button class="btn btn-ghost btn-sm" onclick="resetStudyRecord()" style="color:var(--danger)">重置记录</button>
+              <button class="btn btn-ghost btn-sm" onclick="debugStudyDates()" style="color:var(--text-light)">🔍 调试</button>
             </div>
           </div>
         </div>
@@ -1228,13 +1232,29 @@ function addStudyDay() {
   const dates = Store.get('studyDates', []);
   const today = localDateStr();
   if (dates.includes(today)) {
-    showUpdateToast('今天已经记录过了');
+    showUpdateToast('今天（' + today + '）已经记录过了');
   } else {
     dates.push(today);
     Store.set('studyDates', dates);
-    showUpdateToast('✅ 已补录今天的学习记录');
+    showUpdateToast('✅ 已补录 ' + today);
     renderHome();
   }
+}
+
+function debugStudyDates() {
+  const dates = Store.get('studyDates', []);
+  const today = localDateStr();
+  const yesterday = localDateStr(new Date(Date.now()-86400000));
+  const streak = calcStreak();
+  const info = [
+    '📅 今天：' + today,
+    '📅 昨天：' + yesterday,
+    '🔥 连续天数：' + streak,
+    '📚 总记录：' + dates.length + ' 天',
+    '📋 日期列表：' + (dates.length ? dates.sort().join(', ') : '(空)'),
+    '🔧 版本：v4-' + new Date().getTime()
+  ].join('\n');
+  alert(info);
 }
 
 function resetStudyRecord() {
@@ -2775,7 +2795,15 @@ function deleteMemo(id) {
 }
 
 /* ==================== PWA 注册 ==================== */
-if ('serviceWorker' in navigator) {
+// 检测是否在 iOS PWA（standalone）模式，如果是显示提醒
+window.addEventListener('load', () => {
+  const isIOSPWA = window.navigator.standalone === true;
+  if (isIOSPWA) {
+    const hint = document.getElementById('pwaHint');
+    if (hint) hint.style.display = 'block';
+  }
+});
+if (false && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').then(reg => {
       // 检查更新
@@ -2793,6 +2821,16 @@ if ('serviceWorker' in navigator) {
       setInterval(() => reg.update(), 1800000);
     }).catch(err => console.warn('SW注册失败', err));
   });
+}
+
+// v4 补丁：清理旧 SW 残留（如果有的话）
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(reg => reg.unregister().catch(()=>{}));
+  });
+  if (window.caches) {
+    caches.keys().then(keys => keys.forEach(k => caches.delete(k).catch(()=>{})));
+  }
 }
 
 let updateToastTimer = null;
