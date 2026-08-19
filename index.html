@@ -1164,9 +1164,9 @@ function switchPage(name) {
   document.getElementById('pageTitle').textContent = pageTitles[name] || '';
   closeSidebar();
   if (name === 'home') renderHome();
-  if (name === 'english') initEnglish();
-  if (name === 'news') loadNews();
-  if (name === 'oral') renderOral();
+  if (name === 'english') { initEnglish(); markStudyToday(); }
+  if (name === 'news') { loadNews(); markStudyToday(); }
+  if (name === 'oral') { renderOral(); markStudyToday(); }
   if (name === 'memo') renderMemos();
   if (name !== 'english') hideBBCPlayer();
   document.getElementById('content').scrollTop = 0;
@@ -1300,6 +1300,14 @@ function markStudyToday() {
     dates.push(today);
     dates.sort();
     Store.set('studyDates', dates);
+    // 触发首页更新（如果用户当前在首页）
+    const recordEl = document.getElementById('studyRecordDisplay');
+    if (recordEl) {
+      const sorted = [...dates].sort();
+      recordEl.innerHTML = `📚 累计学习 <strong style="color:var(--primary)">${dates.length}</strong> 天<br>📅 最近：${sorted[sorted.length-1]}${sorted.length > 1 ? ' ~ ' + sorted[0] : ''}`;
+    }
+    const streakEl = document.getElementById('streakDays');
+    if (streakEl) streakEl.textContent = calcStreak();
   }
 }
 
